@@ -14,7 +14,7 @@ inline constexpr bool is_resizable_v = false;
 
 template<typename T>
 inline constexpr bool is_resizable_v<T, std::void_t<
-        decltype(&T::reserve)
+        decltype(&T::resize)
     >> = true;
 
 
@@ -52,7 +52,7 @@ using wrap_value_t = decltype(wrap_value_impl<Type>(std::declval<Container>()));
 
 
 template<typename InputIt, typename OutputIt, typename UnaryOp>
-void transform(InputIt first, InputIt last, OutputIt result, UnaryOp unary_op)
+constexpr void transform(InputIt first, InputIt last, OutputIt result, UnaryOp unary_op)
 {
     for (; first != last; ++first, (void)++result) {
         *result = unary_op(first);
@@ -64,7 +64,7 @@ void transform(InputIt first, InputIt last, OutputIt result, UnaryOp unary_op)
 
 /**
  * @brief Wrapper around sortable container with automatic notification
- * about changed values.
+ * about swapped values.
  */
 template<typename Container>
 class Range
@@ -76,7 +76,7 @@ public:
     using change_handler_type = std::function<void(Change)>;
 
 
-    explicit Range(Container& container)
+    constexpr explicit Range(Container& container)
     {
         if constexpr (detail::is_contiguous_container_v<Container>) {
             if constexpr (detail::is_resizable_v<Container>) {
@@ -84,8 +84,8 @@ public:
             }
 
             detail::transform(
-                std::begin(container),
-                std::end(container),
+                container.begin(),
+                container.end(),
                 begin(),
                 [&] (auto iter) {
                     return Value{iter, &_handler};
@@ -93,8 +93,8 @@ public:
             );
         } else if constexpr (detail::has_push_back_v<Container>) {
             detail::transform(
-                std::begin(container),
-                std::end(container),
+                container.begin(),
+                container.end(),
                 std::back_inserter(_container),
                 [&] (auto iter) {
                     return Value{iter, &_handler};
@@ -133,7 +133,7 @@ private:
         using iterator = typename Container::iterator;
         using value_type = typename Container::value_type;
 
-    public:
+    public: 
         constexpr Value() noexcept = default;
 
         constexpr Value(Value&& that) noexcept
@@ -170,7 +170,7 @@ private:
     private:
         friend Range;
 
-        explicit Value(iterator iter, const change_handler_type* handler) noexcept :
+        constexpr explicit Value(iterator iter, const change_handler_type* handler) noexcept :
             _iter{iter},
             _handler{handler}
         { }

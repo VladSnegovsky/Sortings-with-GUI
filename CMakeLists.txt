@@ -19,4 +19,4 @@ add_subdirectory(${LIB_DIR})
 add_subdirectory(${TESTS_DIR})
 
 # include ui
-#add_subdirectory(${UI_DIR})
+add_subdirectory(${UI_DIR})
