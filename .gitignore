@@ -523,3 +523,6 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/c++,cmake,clion,kdevelop4,qtcreator,visualstudio
 
+.vscode/
+build/
+build-*/
