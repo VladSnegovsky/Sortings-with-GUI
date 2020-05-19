@@ -31,6 +31,8 @@ void arrSort::createArr(QString newNum)
         newEl->prev = last;
         last = newEl;
     }
+    int num = newNum.toInt();
+    emit returnText(QString::number(num));
 
     elementsVector.push_back(newNum.toInt());
 }
@@ -40,4 +42,14 @@ void arrSort::startSort(QString sortType)
     // sortType returns the name of sorting
 
     emit sendToQml(1, 2, "2", "3");
+}
+
+void arrSort::speedlower()
+{
+
+}
+
+void arrSort::speedhigher()
+{
+
 }
