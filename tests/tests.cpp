@@ -14,16 +14,6 @@
 #include <list>
 #include <forward_list>
 
-TEST_CASE("[lab][sort]") {
-    using namespace lab;
-
-    SECTION("Insertion") {
-        std::array arr{1, 0, -10, 12, 1002, 20};
-        sort::insertion(arr.begin(), arr.end());
-        REQUIRE(arr == std::array{-10, 0, 1, 12, 20, 1002});
-    }
-}
-
 TEST_CASE("[lab][utils][range]") {
     using namespace lab;
 
@@ -52,7 +42,7 @@ TEST_CASE("[lab][utils][range]") {
     }
 }
 
-TEST_CASE("Sorting tests") {
+TEST_CASE("[lab][sort]") {
     using namespace lab::sort;
 
     const std::vector<std::vector<int>> RAIter_cases = {
