@@ -3,7 +3,13 @@ project(libsort CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SRC_LIST
-    Sort/Insertion.hpp
+    Sort/bubble.hpp
+    Sort/heap.hpp
+    Sort/insertion.hpp
+    Sort/merge.hpp
+    Sort/quick.hpp
+    Sort/selection.hpp
+    
     Utils/Range.hpp
 )
 
