@@ -11,11 +11,17 @@ Window {
     width: 640
     height: 480
 
+    property int ij: 0;
     property int ind1: 0;
     property int ind2: 0;
     property string namEl1: "";
     property string namEl2: "";
+    property string newName: "";
     property int speed: 3;
+//    property variant arr1: [0, 2, 4];
+//    property variant arr2: [1, 3, 5];
+//    property variant arr3: ["1", "3", "5"];
+//    property variant arr4: ["2", "4", "6"];
 
     Timer {
         id: _actionTimerColor1
@@ -39,6 +45,26 @@ Window {
         onTriggered: _listModel.set(ind1, {col: "lightblue"}), _listModel.set(ind2, {col: "lightblue"})
     }
 
+//    Timer {
+//        id: _actionTest1
+//        running: false
+//        repeat: false
+//        onTriggered: _listModel.set(arr1[ij], {col: "red"}), _listModel.set(arr2[ij], {col: "red"})
+//    }
+//    Timer {
+//        id: _actionTest2
+//        interval: speed * 670
+//        running: false
+//        repeat: false
+//        onTriggered: _listModel.set(arr1[ij], {textList: arr4[ij]}), _listModel.set(arr2[ij], {textList: arr3[ij]})
+//    }
+//    Timer {
+//        id: _actionTest3
+//        running: false
+//        repeat: false
+//        onTriggered: _listModel.set(arr1[ij], {col: "lightblue"}), _listModel.set(arr2[ij], {col: "lightblue"})
+//    }
+
     Connections {
         target: sorting
         onSendToQml: {
@@ -49,6 +75,15 @@ Window {
             _actionTimerColor1.start()
             _actionTimerName1.start()
             _actionTimerColor3.start()
+//            for (ij = 0; ij < 3; ij++){
+//                _actionTest1.start()
+//                _actionTest2.start()
+//                _actionTest3.start()
+//            }
+        }
+        onReturnText: {
+            newName = num;
+            _listModel.append({ textList: newName, col: "lightblue" });
         }
     }
 
@@ -91,7 +126,6 @@ Window {
                 Keys.onPressed: {
                     if(event.key === 16777220){
                         sorting.createArr(_textInput.text);
-                        _listModel.append({ textList: _textInput.text, col: "lightblue" })
                     }
                 }
             }
@@ -103,7 +137,6 @@ Window {
 
             onClicked: {
                 sorting.createArr(_textInput.text);
-                _listModel.append({ textList: _textInput.text, col: "lightblue" })
             }
         }
 
@@ -136,9 +169,10 @@ Window {
             Layout.fillHeight: true
             text: "Faster"
             onClicked: {
-                if (speed > 1){
-                    speed--;
-                }
+//                if (speed > 1){
+//                    speed--;
+//                }
+                sorting.speedlower();
             }
         }
         Button {
@@ -147,9 +181,10 @@ Window {
             Layout.fillHeight: true
             text: "Slower"
             onClicked: {
-                if (speed < 20){
-                    speed++;
-                }
+//                if (speed < 20){
+//                    speed++;
+//                }
+                sorting.speedhigher();
             }
         }
     }
@@ -162,7 +197,7 @@ Window {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        anchors.topMargin: _rowLayout.height + _rowLayoutSpeed.height + 20
+        anchors.topMargin: _rowLayout.height + _rowLayoutSpeed.height - 40
 
         spacing: 5
         orientation: ListView.Horizontal

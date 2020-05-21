@@ -18,10 +18,13 @@ public:
 
 signals:
     void sendToQml(int id1, int id2, QString name1, QString name2);
+    void returnText(QString num);
 
 public slots:
     void createArr(QString newNum);
     void startSort(QString sortType);
+    void speedlower();
+    void speedhigher();
 };
 
 #endif // ARRSORT_H
