@@ -109,9 +109,17 @@ constexpr void heap(FIter first, FIter last, Comp comparator, std::forward_itera
 /**
  * @brief Sorts [begin, end) diapason using heap sort.
  */
-template<typename Iter, typename Comp = std::less<typename std::iterator_traits<Iter>::value_type>>
-constexpr void heap(Iter first, Iter last, Comp comparator = Comp()) {
+template<typename Iter, typename Comp>
+constexpr void heap(Iter first, Iter last, Comp comparator) {
     heap(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+}
+
+/**
+ * @brief Sorts [begin, end) diapason using heap sort.
+ */
+template<typename Iter>
+constexpr void heap(Iter first, Iter last) {
+    heap(first, last, std::less<>());
 }
 
 } // namespace lab::sort

@@ -40,9 +40,17 @@ constexpr void quick(RAIter first, RAIter last, Comp comparator, std::random_acc
 /**
  * @brief Sorts [begin, end) diapason using quick sort.
  */
-template<typename Iter, typename Comp = std::less<typename std::iterator_traits<Iter>::value_type>>
-constexpr void quick(Iter first, Iter last, Comp comparator = Comp()) {
+template<typename Iter, typename Comp>
+constexpr void quick(Iter first, Iter last, Comp comparator) {
     quick(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+}
+
+/**
+ * @brief Sorts [begin, end) diapason using quick sort.
+ */
+template<typename Iter>
+constexpr void quick(Iter first, Iter last) {
+    quick(first, last, std::less<>());
 }
 
 } // namespace lab::sort

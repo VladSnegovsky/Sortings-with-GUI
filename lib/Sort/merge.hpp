@@ -43,9 +43,17 @@ constexpr void merge(FIter first, FIter last, Comp comparator, std::forward_iter
 /**
  * @brief Sorts [begin, end) diapason using merge sort.
  */
-template<typename Iter, typename Comp = std::less<typename std::iterator_traits<Iter>::value_type>>
-constexpr void merge(Iter first, Iter last, Comp comparator = Comp()) {
+template<typename Iter, typename Comp>
+constexpr void merge(Iter first, Iter last, Comp comparator) {
     merge(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+}
+
+/**
+ * @brief Sorts [begin, end) diapason using merge sort.
+ */
+template<typename Iter>
+constexpr void merge(Iter first, Iter last) {
+    merge(first, last, std::less<>());
 }
 
 } // namespace lab::sort

@@ -27,9 +27,17 @@ constexpr void selection(FIter first, FIter last, Comp comparator, std::forward_
 /**
  * @brief Sorts [begin, end) diapason on random access iterators using selection sort.
  */
-template<typename Iter, typename Comp = std::less<typename std::iterator_traits<Iter>::value_type>>
-constexpr void selection(Iter first, Iter last, Comp comparator = Comp()) {
+template<typename Iter, typename Comp>
+constexpr void selection(Iter first, Iter last, Comp comparator) {
     selection(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+}
+
+/**
+ * @brief Sorts [begin, end) diapason on random access iterators using selection sort.
+ */
+template<typename Iter>
+constexpr void selection(Iter first, Iter last) {
+    selection(first, last, std::less<>());
 }
 
 } // namespace lab::sort

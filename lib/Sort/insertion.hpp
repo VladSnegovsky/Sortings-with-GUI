@@ -54,9 +54,17 @@ constexpr void insertion(RAIter first, RAIter last, Comp comparator, std::random
 /**
  * @brief Sorts [begin, end) diapason using insertion sort.
  */
-template<typename Iter, typename Comp = std::less<typename std::iterator_traits<Iter>::value_type>>
-constexpr void insertion(Iter first, Iter last, Comp comparator = Comp()) {
+template<typename Iter, typename Comp>
+constexpr void insertion(Iter first, Iter last, Comp comparator) {
     insertion(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+}
+
+/**
+ * @brief Sorts [begin, end) diapason using insertion sort.
+ */
+template<typename Iter>
+constexpr void insertion(Iter first, Iter last) {
+    insertion(first, last, std::less<>());
 }
 
 } // namespace lab::sort
