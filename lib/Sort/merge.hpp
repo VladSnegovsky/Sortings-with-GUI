@@ -8,6 +8,8 @@
 
 namespace lab::sort {
 
+namespace detail {
+    
 /**
  * @brief Sorts [begin, end) diapason on random access iterators using merge sort.
  */
@@ -40,12 +42,14 @@ constexpr void merge(FIter first, FIter last, Comp comparator, std::forward_iter
                std::make_move_iterator(std::next(first, std::distance(first, last)/2)), std::make_move_iterator(last), first, comparator);
 }
 
+} // namespace detail
+
 /**
  * @brief Sorts [begin, end) diapason using merge sort.
  */
 template<typename Iter, typename Comp>
 constexpr void merge(Iter first, Iter last, Comp comparator) {
-    merge(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+    detail::merge(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
 }
 
 /**

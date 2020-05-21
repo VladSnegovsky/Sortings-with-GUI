@@ -6,6 +6,8 @@
 #include <cassert>
 
 namespace lab::sort {
+    
+namespace detail {
 
 /**
  * @brief Sorts [begin, end) diapason on forward iterators using quick sort.
@@ -37,12 +39,14 @@ constexpr void quick(RAIter first, RAIter last, Comp comparator, std::random_acc
     }
 }
 
+} // namespace detail
+
 /**
  * @brief Sorts [begin, end) diapason using quick sort.
  */
 template<typename Iter, typename Comp>
 constexpr void quick(Iter first, Iter last, Comp comparator) {
-    quick(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+    detail::quick(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
 }
 
 /**

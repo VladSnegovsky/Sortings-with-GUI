@@ -7,6 +7,7 @@
 
 namespace lab::sort {
 
+namespace detail {
 /**
  * @brief Sorts [begin, end) diapason on forward iterators using bubble sort.
  */
@@ -32,12 +33,14 @@ namespace lab::sort {
      }
  }
 
+} // namespace detail
+
  /**
   * @brief Sorts [begin, end) diapason using bubble sort.
   */
  template<typename Iter, typename Comp>
  constexpr void bubble(Iter fisrt, Iter last, Comp comparator) {
-     bubble(fisrt, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+     detail::bubble(fisrt, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
  }
  
  /**
