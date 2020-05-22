@@ -12,74 +12,45 @@ Window {
     height: 480
 
     property int ij: 0;
-    property int ind1: 0;
-    property int ind2: 0;
-    property string namEl1: "";
-    property string namEl2: "";
+    property int id_1: 0;
+    property int id_2: 0;
+    property string id_1_name: "";
+    property string id_2_name: "";
     property string newName: "";
     property int speed: 3;
-//    property variant arr1: [0, 2, 4];
-//    property variant arr2: [1, 3, 5];
-//    property variant arr3: ["1", "3", "5"];
-//    property variant arr4: ["2", "4", "6"];
 
     Timer {
         id: _actionTimerColor1
         interval: speed * 335
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {col: "red"}), _listModel.set(ind2, {col: "red"})
+        onTriggered: _listModel.set(id_1, {col: "red"}), _listModel.set(id_2, {col: "red"})
     }
     Timer {
         id: _actionTimerName1
         interval: speed * 670
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {textList: namEl2}), _listModel.set(ind2, {textList: namEl1})
+        onTriggered: _listModel.set(id_1, {textList: id_2_name}), _listModel.set(id_2, {textList: id_1_name})
     }
     Timer {
         id: _actionTimerColor3
         interval: speed * 1000
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {col: "lightblue"}), _listModel.set(ind2, {col: "lightblue"})
+        onTriggered: _listModel.set(id_1, {col: "lightblue"}), _listModel.set(id_2, {col: "lightblue"})
     }
-
-//    Timer {
-//        id: _actionTest1
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {col: "red"}), _listModel.set(arr2[ij], {col: "red"})
-//    }
-//    Timer {
-//        id: _actionTest2
-//        interval: speed * 670
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {textList: arr4[ij]}), _listModel.set(arr2[ij], {textList: arr3[ij]})
-//    }
-//    Timer {
-//        id: _actionTest3
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {col: "lightblue"}), _listModel.set(arr2[ij], {col: "lightblue"})
-//    }
 
     Connections {
         target: sorting
         onSendToQml: {
-            ind1 = id1;
-            ind2 = id2;
-            namEl1 = name1;
-            namEl2 = name2;
-            _actionTimerColor1.start()
-            _actionTimerName1.start()
-            _actionTimerColor3.start()
-//            for (ij = 0; ij < 3; ij++){
-//                _actionTest1.start()
-//                _actionTest2.start()
-//                _actionTest3.start()
-//            }
+            id_1 = id1;
+            id_2 = id2;
+            id_1_name = name1;
+            id_2_name = name2;
+            _actionTimerColor1.start();
+            _actionTimerName1.start();
+            _actionTimerColor3.start();
         }
         onReturnText: {
             newName = num;
@@ -101,7 +72,7 @@ Window {
         ComboBox {
             id: _sortingType
 
-
+            width:100
             Layout.fillHeight: true
 
             model: ["Selection Sort", "Bubble Sort", "QuickSort", "Insertion Sort", "Merge Sort", "HeapSort"]
