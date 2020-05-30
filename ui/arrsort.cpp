@@ -42,6 +42,7 @@ void arrSort::startSort(QString sortType)
     // sortType returns the name of sorting
 
     emit sendToQml(1, 2, "2", "3");
+    // emit finish(); for Add Button
 }
 
 void arrSort::speedlower()

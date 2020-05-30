@@ -56,6 +56,9 @@ Window {
             newName = num;
             _listModel.append({ textList: newName, col: "lightblue" });
         }
+        onFinish: {
+            _button.enabled = true;
+        }
     }
 
     RowLayout {
@@ -93,12 +96,6 @@ Window {
                 validator: RegExpValidator { regExp: /\d{1,4}(?:,\d{1,4})+$/ }
 
                 font.pixelSize: 20
-
-                Keys.onPressed: {
-                    if(event.key === 16777220){
-                        sorting.createArr(_textInput.text);
-                    }
-                }
             }
         }
         Button {
@@ -118,6 +115,7 @@ Window {
 
             onClicked: {
                 sorting.startSort(_sortingType.currentText);
+                _button.enabled = false;
             }
         }
     }
@@ -140,9 +138,6 @@ Window {
             Layout.fillHeight: true
             text: "Faster"
             onClicked: {
-//                if (speed > 1){
-//                    speed--;
-//                }
                 sorting.speedlower();
             }
         }
@@ -152,9 +147,6 @@ Window {
             Layout.fillHeight: true
             text: "Slower"
             onClicked: {
-//                if (speed < 20){
-//                    speed++;
-//                }
                 sorting.speedhigher();
             }
         }
