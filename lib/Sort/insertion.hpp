@@ -7,6 +7,8 @@
 
 namespace lab::sort {
 
+namespace detail {
+    
 /**
  * @brief Sorts [begin, end) diapason on forward iterators using insertion sort.
  */
@@ -51,12 +53,14 @@ constexpr void insertion(RAIter first, RAIter last, Comp comparator, std::random
     }
 }
 
+} // namespace detail
+
 /**
  * @brief Sorts [begin, end) diapason using insertion sort.
  */
 template<typename Iter, typename Comp>
 constexpr void insertion(Iter first, Iter last, Comp comparator) {
-    insertion(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+    detail::insertion(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
 }
 
 /**

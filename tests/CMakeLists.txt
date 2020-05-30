@@ -1,7 +1,5 @@
 project(tests CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-
 set(SRC_LIST
 	main.cpp
 	tests.cpp

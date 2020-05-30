@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         &engine, 
         &QQmlApplicationEngine::objectCreated,
         &app,
-        [url = QUrl{QStringLiteral("qrc:/main.qml")}] (auto* object, const QUrl& objectUrl) {
+        [&url] (auto* object, const QUrl& objectUrl) {
             if (!object && url == objectUrl) {
                 QCoreApplication::exit(-1);
             }
@@ -27,5 +27,5 @@ int main(int argc, char *argv[])
     );
     engine.load(url);
 
-    return app.exec();
+    return QGuiApplication::exec();
 }

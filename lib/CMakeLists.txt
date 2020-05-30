@@ -1,7 +1,5 @@
 project(libsort CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-
 set(SRC_LIST
     Sort/bubble.hpp
     Sort/heap.hpp
@@ -9,7 +7,7 @@ set(SRC_LIST
     Sort/merge.hpp
     Sort/quick.hpp
     Sort/selection.hpp
-    
+
     Utils/Range.hpp
 )
 

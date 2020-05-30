@@ -6,7 +6,8 @@
 #include <cassert>
 
 namespace lab::sort {
-
+namespace detail {
+    
 /**
  * @brief Sorts [begin, end) diapason on forward iterators using selection sort.
  */
@@ -24,12 +25,14 @@ constexpr void selection(FIter first, FIter last, Comp comparator, std::forward_
     }
 }
 
+} // namespace detail
+
 /**
  * @brief Sorts [begin, end) diapason on random access iterators using selection sort.
  */
 template<typename Iter, typename Comp>
 constexpr void selection(Iter first, Iter last, Comp comparator) {
-    selection(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+    detail::selection(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
 }
 
 /**

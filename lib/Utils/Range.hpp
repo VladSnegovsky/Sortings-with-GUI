@@ -77,6 +77,62 @@ public:
 
     using change_handler_type = std::function<void(Change change)>;
 
+    class Value
+    {
+    private:
+        using iterator = typename Container::iterator;
+        using value_type = typename Container::value_type;
+
+    public: 
+        constexpr Value() noexcept = default;
+
+        constexpr Value(Value&& that) noexcept
+        {
+            _iter = that._iter;
+            that._iter = {};
+
+            _handler = that._handler;
+            that._handler = nullptr;
+        }
+
+        Value& operator=(Value&& that) noexcept
+        {
+            _iter = that._iter;
+            that._iter = {};
+
+            _handler = that._handler;
+            that._handler = nullptr;
+
+            return *this;
+        }
+
+        constexpr friend void swap(Value& lhs, Value& rhs) noexcept
+        {
+            /// Main magic happens here. We use ADL to find this overload
+            /// and register swap of two values.
+            std::iter_swap(lhs._iter, rhs._iter);
+        }
+
+        constexpr operator const value_type&() const noexcept
+        {
+            return *_iter;
+        }
+
+    private:
+        friend Range;
+
+        constexpr explicit Value(iterator iter, const change_handler_type* handler) noexcept :
+            _iter{iter},
+            _handler{handler}
+        { }
+
+    private:
+        iterator _iter;
+        const change_handler_type* _handler{nullptr};
+    };
+
+    using container_type = detail::wrap_value_t<Value, Container>;
+    using iterator = typename container_type::iterator;
 
     constexpr explicit Range(Container& container)
     {
@@ -129,61 +185,7 @@ public:
     }
 
 private:
-    class Value
-    {
-    private:
-        using iterator = typename Container::iterator;
-        using value_type = typename Container::value_type;
-
-    public: 
-        constexpr Value() noexcept = default;
-
-        constexpr Value(Value&& that) noexcept
-        {
-            _iter = that._iter;
-            that._iter = {};
-
-            _handler = that._handler;
-            that._handler = nullptr;
-        }
-
-        Value& operator=(Value&& that) noexcept
-        {
-            _iter = that._iter;
-            that._iter = {};
-
-            _handler = that._handler;
-            that._handler = nullptr;
-
-            return *this;
-        }
-
-        constexpr friend void swap(Value& lhs, Value& rhs) noexcept
-        {
-            using std::swap;
-            swap(*lhs._iter, *rhs._iter);
-        }
-
-        constexpr operator const value_type&() const noexcept
-        {
-            return *_iter;
-        }
-
-    private:
-        friend Range;
-
-        constexpr explicit Value(iterator iter, const change_handler_type* handler) noexcept :
-            _iter{iter},
-            _handler{handler}
-        { }
-
-    private:
-        iterator _iter;
-        const change_handler_type* _handler{nullptr};
-    };
-
-private:
-    detail::wrap_value_t<Value, Container> _container;
+    container_type _container;
     change_handler_type _handler;
 };
 

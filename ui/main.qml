@@ -4,56 +4,61 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
 
 Window {
-    id: _all
+    id: all
 
     visible: true
     width: 640
     height: 480
 
-    property int ij: 0;
-    property int ind1: 0;
-    property int ind2: 0;
-    property string namEl1: "";
-    property string namEl2: "";
-    property string newName: "";
+    property int first: 0;
+    property int second: 0;
     property int speed: 3;
+
 
     Timer {
         id: _actionTimerColor1
         interval: speed * 335
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {col: "red"}), _listModel.set(ind2, {col: "red"})
+        onTriggered: {
+            array.set(first, {col: "red"});
+            array.set(second, {col: "red"});
+        }
     }
+
     Timer {
         id: _actionTimerName1
         interval: speed * 670
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {textList: namEl2}), _listModel.set(ind2, {textList: namEl1})
+        onTriggered: {
+            var firstName = array.get(first).textList;
+            var secondName = array.get(second).textList;
+            array.set(first, { textList: secondName });
+            array.set(second, { textList: firstName });
+        }
     }
+
     Timer {
         id: _actionTimerColor3
         interval: speed * 1000
         running: false
         repeat: false
-        onTriggered: _listModel.set(ind1, {col: "lightblue"}), _listModel.set(ind2, {col: "lightblue"})
+        onTriggered: {
+            array.set(first, {col: "lightblue"});
+            array.set(second, {col: "lightblue"})
+        }
     }
 
     Connections {
         target: sorting
-        onSendToQml: {
-            ind1 = id1;
-            ind2 = id2;
-            namEl1 = name1;
-            namEl2 = name2;
-            _actionTimerColor1.start()
-            _actionTimerName1.start()
-            _actionTimerColor3.start()
-        }
-        onReturnText: {
-            newName = num;
-            _listModel.append({ textList: newName, col: "lightblue" });
+
+        onSendChange: {
+            all.first = first;
+            all.second = second;
+            _actionTimerColor1.start();
+            _actionTimerName1.start();
+            _actionTimerColor3.start();
         }
     }
 
@@ -69,14 +74,23 @@ Window {
         z:2
 
         ComboBox {
-            id: _sortingType
-
-
+            width:100
             Layout.fillHeight: true
 
-            model: ["Selection Sort", "Bubble Sort", "QuickSort", "Insertion Sort", "Merge Sort", "HeapSort"]
-        }
+            model: ListModel {
+                id: cdItems
+                ListElement { text: "SelectionSort" }
+                ListElement { text: "BubbleSort" }
+                ListElement { text: "QuickSort" }
+                ListElement { text: "InsertionSort" }
+                ListElement { text: "MergeSort" }
+                ListElement { text: "HeapSort" }
+            }
 
+            onCurrentIndexChanged: {
+                sorting.selectType(cdItems.get(currentIndex).text);
+            }
+        }
 
         Rectangle {
             Layout.fillWidth: true
@@ -93,20 +107,19 @@ Window {
 
                 font.pixelSize: 20
 
-                Keys.onPressed: {
-                    if(event.key === 16777220){
-                        sorting.makeArray(_textInput.text);
-                    }
+                Keys.onReturnPressed: {
+                    array.update();
                 }
             }
         }
+
         Button {
             id: _button
             text: qsTr("Add")
             Layout.fillHeight: true
 
             onClicked: {
-                sorting.createArr(_textInput.text);
+                array.update();
             }
         }
 
@@ -116,7 +129,7 @@ Window {
             Layout.fillHeight: true
 
             onClicked: {
-                sorting.startSort(_sortingType.currentText);
+                sorting.start();
             }
         }
     }
@@ -139,6 +152,7 @@ Window {
             Layout.fillHeight: true
             text: "Faster"
             onClicked: {
+                speed = speed + 1;
                 sorting.speedUp();
             }
         }
@@ -187,7 +201,13 @@ Window {
         }
 
         model: ListModel{
-            id: _listModel
+            id: array
+
+            function update() {
+                sorting.addValue(_textInput.text);
+                append({ textList: _textInput.text, col: "lightblue" });
+                _textInput.text = "";
+            }
         }
     }
 }
