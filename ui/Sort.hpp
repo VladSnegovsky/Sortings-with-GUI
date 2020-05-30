@@ -1,5 +1,4 @@
-#ifndef ARRSORT_H
-#define ARRSORT_H
+#pragma once
 
 #include <QObject>
 #include <QDebug>
@@ -9,22 +8,22 @@
 #include <QTime>
 #include <QThread>
 
-class arrSort: public QObject
+namespace lab::ui
+{
+
+class Sort final : public QObject
 {
     Q_OBJECT
-
-public:
-    arrSort();
 
 signals:
     void sendToQml(int id1, int id2, QString name1, QString name2);
     void returnText(QString num);
 
 public slots:
-    void createArr(QString newNum);
+    void makeArray(QString newNum);
     void startSort(QString sortType);
-    void speedlower();
-    void speedhigher();
+    void speedUp();
+    void speedDown();
 };
 
-#endif // ARRSORT_H
+} // namespace lab::ui

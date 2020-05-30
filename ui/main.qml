@@ -1,8 +1,7 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
 import QtQuick 2.0
+import QtQuick.Window 2.0
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
 
 Window {
     id: _all
@@ -18,10 +17,6 @@ Window {
     property string namEl2: "";
     property string newName: "";
     property int speed: 3;
-//    property variant arr1: [0, 2, 4];
-//    property variant arr2: [1, 3, 5];
-//    property variant arr3: ["1", "3", "5"];
-//    property variant arr4: ["2", "4", "6"];
 
     Timer {
         id: _actionTimerColor1
@@ -45,26 +40,6 @@ Window {
         onTriggered: _listModel.set(ind1, {col: "lightblue"}), _listModel.set(ind2, {col: "lightblue"})
     }
 
-//    Timer {
-//        id: _actionTest1
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {col: "red"}), _listModel.set(arr2[ij], {col: "red"})
-//    }
-//    Timer {
-//        id: _actionTest2
-//        interval: speed * 670
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {textList: arr4[ij]}), _listModel.set(arr2[ij], {textList: arr3[ij]})
-//    }
-//    Timer {
-//        id: _actionTest3
-//        running: false
-//        repeat: false
-//        onTriggered: _listModel.set(arr1[ij], {col: "lightblue"}), _listModel.set(arr2[ij], {col: "lightblue"})
-//    }
-
     Connections {
         target: sorting
         onSendToQml: {
@@ -75,11 +50,6 @@ Window {
             _actionTimerColor1.start()
             _actionTimerName1.start()
             _actionTimerColor3.start()
-//            for (ij = 0; ij < 3; ij++){
-//                _actionTest1.start()
-//                _actionTest2.start()
-//                _actionTest3.start()
-//            }
         }
         onReturnText: {
             newName = num;
@@ -125,7 +95,7 @@ Window {
 
                 Keys.onPressed: {
                     if(event.key === 16777220){
-                        sorting.createArr(_textInput.text);
+                        sorting.makeArray(_textInput.text);
                     }
                 }
             }
@@ -169,10 +139,7 @@ Window {
             Layout.fillHeight: true
             text: "Faster"
             onClicked: {
-//                if (speed > 1){
-//                    speed--;
-//                }
-                sorting.speedlower();
+                sorting.speedUp();
             }
         }
         Button {
@@ -181,10 +148,7 @@ Window {
             Layout.fillHeight: true
             text: "Slower"
             onClicked: {
-//                if (speed < 20){
-//                    speed++;
-//                }
-                sorting.speedhigher();
+                sorting.speedDown();
             }
         }
     }

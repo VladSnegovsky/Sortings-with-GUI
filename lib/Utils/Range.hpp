@@ -71,9 +71,11 @@ class Range
 {
 public:
     struct Change
-    { };
+    {
+        
+    };
 
-    using change_handler_type = std::function<void(Change)>;
+    using change_handler_type = std::function<void(Change change)>;
 
 
     constexpr explicit Range(Container& container)

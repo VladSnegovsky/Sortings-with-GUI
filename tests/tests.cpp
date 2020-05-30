@@ -9,10 +9,10 @@
 
 #include <Utils/Range.hpp>
 
+#include <forward_list>
 #include <algorithm>
 #include <array>
 #include <list>
-#include <forward_list>
 
 TEST_CASE("[lab][utils][range]") {
     using namespace lab;

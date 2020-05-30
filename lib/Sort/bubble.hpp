@@ -36,16 +36,16 @@ namespace lab::sort {
   * @brief Sorts [begin, end) diapason using bubble sort.
   */
  template<typename Iter, typename Comp>
- constexpr void bubble(Iter fisrt, Iter last, Comp comparator) {
-     bubble(fisrt, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+ constexpr void bubble(Iter first, Iter last, Comp comparator) {
+     bubble(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
  }
  
  /**
   * @brief Sorts [begin, end) diapason using bubble sort.
   */
  template<typename Iter>
- constexpr void bubble(Iter fisrt, Iter last) {
-     bubble(fisrt, last, std::less<>());
+ constexpr void bubble(Iter first, Iter last) {
+     bubble(first, last, std::less<>{});
  }
 
 } // namespace lab::sort

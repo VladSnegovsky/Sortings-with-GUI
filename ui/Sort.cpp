@@ -1,5 +1,5 @@
-#include "arrsort.h"
-#include "elIndex.h"
+#include "Sort.hpp"
+#include "Index.hpp"
 
 Index* Father = NULL;
 Index* last;
@@ -7,9 +7,9 @@ Index* last;
 int nextInd = 0;
 QVector<int> elementsVector;
 
-arrSort::arrSort() {}
+namespace lab::ui {
 
-void arrSort::createArr(QString newNum)
+void Sort::makeArray(QString newNum)
 {
     if (Father == NULL){
         Father = new Index;
@@ -37,19 +37,21 @@ void arrSort::createArr(QString newNum)
     elementsVector.push_back(newNum.toInt());
 }
 
-void arrSort::startSort(QString sortType)
+void Sort::startSort(QString sortType)
 {
     // sortType returns the name of sorting
 
     emit sendToQml(1, 2, "2", "3");
 }
 
-void arrSort::speedlower()
+void Sort::speedUp()
 {
 
 }
 
-void arrSort::speedhigher()
+void Sort::speedDown()
 {
 
 }
+
+} // namespace lab::ui
