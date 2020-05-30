@@ -58,6 +58,7 @@ Window {
         }
         onFinish: {
             _button.enabled = true;
+            _buttonStart.enabled = true;
         }
     }
 
@@ -116,6 +117,7 @@ Window {
             onClicked: {
                 sorting.startSort(_sortingType.currentText);
                 _button.enabled = false;
+                _buttonStart.enabled = false;
             }
         }
     }
