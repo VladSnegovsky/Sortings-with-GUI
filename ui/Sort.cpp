@@ -1,4 +1,5 @@
 #include "Sort.hpp"
+#include "Change.hpp"
 
 #include <Sort/bubble.hpp>
 #include <Sort/heap.hpp>
@@ -8,10 +9,7 @@
 #include <Sort/selection.hpp>
 #include <Utils/Range.hpp>
 #include <QDebug>
-#include <QVector>
 #include <type_traits>
-#include <optional>
-#include <cassert>
 #include <variant>
 #include <vector>
 
@@ -25,13 +23,13 @@ template<typename T, template<typename...> typename... Ts>
 using container_variant = std::variant<Ts<T>...>;
 
 /**
- * @brief
+ * @brief Alias to help compiler deduce return type.
  */
 template<typename Container, typename It = typename Container::iterator>
 using function = void(It first, It last);
 
 /**
- * @brief
+ * @brief Convert name to 
  */
 template<typename Container>
 constexpr auto algorithm_from_string(const std::string_view name) noexcept -> function<Container>*
@@ -67,7 +65,6 @@ constexpr auto algorithm_from_string(const std::string_view name) noexcept -> fu
 
 } // namespace
 
-
 struct Sort::Impl
 {
     /// Type used for demonstration
@@ -76,8 +73,7 @@ struct Sort::Impl
     /// Possible container type
     using container_type = container_variant<
         value_type,
-        std::vector,
-        std::list
+        std::vector
     >;
 
     /// Container to be sorted
@@ -87,8 +83,11 @@ struct Sort::Impl
 };
 
 Sort::Sort()
-    : _pimpl{new Impl{}}
+    : QObject{},
+      _pimpl{new Impl{}}
 { }
+
+Sort::~Sort() noexcept = default;
 
 void Sort::selectType(const QString type)
 {
@@ -104,37 +103,46 @@ void Sort::addValue(const QString value)
     );
 }
 
-void Sort::start()
+QVariantList Sort::execute()
 {
-    // std::visit([&](auto& container) {
-    //         utils::Range range{container};
-    //         range.set_change_handler([] (auto) {});
+    QVariantList result;
 
-    //         const auto sort = algorithm_from_string<decltype(range)>(_pimpl->algorithm);
+    std::visit([&](auto& container) {
+            utils::Range range{container};
 
-    //         if (sort) {
-    //             return;
-    //         }
+            range.set_change_handler([&] (auto change) mutable {
+                const auto index = [&] (const auto it) {
+                    return static_cast<std::size_t>(std::distance(container.begin(), it));
+                };
 
-    //         sort(range.begin(), range.end());
+                QVariant variant;
+    
+                variant.setValue(Change{index(change.first), index(change.second)});
+                result.push_back(std::move(variant));
+            });
 
-    //         container.clear();
-    //     },
-    //     _pimpl->container
-    // );
+            /// Choose sort type
+            const auto sort = algorithm_from_string<decltype(range)>(_pimpl->algorithm);
+            if (!sort) {
+                return;
+            }
 
-    // emit sendChange(0, 1);
-    emit sendChange(0, 2);
+            /// Invoke sort & aggregate changes
+            sort(range.begin(), range.end());
+        },
+        _pimpl->container
+    );
+
+    return result;
 }
 
-void Sort::speedUp()
+void Sort::clear()
 {
-
-}
-
-void Sort::speedDown()
-{
-
+    std::visit([] (auto& container) {
+            container.clear();
+        },
+        _pimpl->container
+        );
 }
 
 } // namespace lab::ui

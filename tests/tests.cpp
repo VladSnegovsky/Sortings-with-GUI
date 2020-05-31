@@ -33,13 +33,6 @@ TEST_CASE("[lab][utils][range]") {
             utils::Range range{list};
         }
     }
-
-    SECTION("Access") {
-        auto array = std::array{3, 2, 1};
-        utils::Range range{array};
-        sort::insertion(range.begin(), range.end());
-        REQUIRE(array == std::array{1, 2, 3});
-    }
 }
 
 TEST_CASE("[lab][sort]") {

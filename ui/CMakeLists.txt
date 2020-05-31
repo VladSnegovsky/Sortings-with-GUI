@@ -6,9 +6,10 @@ find_package(Qt5 COMPONENTS Core Quick)
 set(CMAKE_AUTOMOC ON)
 
 # Add our single resource file
-qt5_add_resources(RESOURCES qml.qrc)
+qt5_add_resources(RESOURCES Res/Res.qrc)
 
 set(SRC_LIST
+    Change.hpp
     main.cpp
     Sort.cpp
 )

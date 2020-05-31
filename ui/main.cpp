@@ -4,28 +4,16 @@
 #include <QGuiApplication>
 #include <QQmlContext>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app{argc, argv};
     QQmlApplicationEngine engine;
-    lab::ui::Sort mainSort;
-    const QUrl url{QStringLiteral("qrc:/main.qml")};
+    lab::ui::Sort sort;
 
-    engine.rootContext()->setContextProperty("sorting", &mainSort);
-    QObject::connect(
-        &engine, 
-        &QQmlApplicationEngine::objectCreated,
-        &app,
-        [&url] (auto* object, const QUrl& objectUrl) {
-            if (!object && url == objectUrl) {
-                QCoreApplication::exit(-1);
-            }
-        }, 
-        Qt::QueuedConnection
-    );
-    engine.load(url);
+    engine.rootContext()->setContextProperty("sort", &sort);
+    engine.load(QUrl{QStringLiteral("qrc:/main.qml")});
 
     return QGuiApplication::exec();
 }

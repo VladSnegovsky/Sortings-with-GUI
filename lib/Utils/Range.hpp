@@ -14,7 +14,7 @@ inline constexpr bool is_resizable_v = false;
 
 template<typename T>
 inline constexpr bool is_resizable_v<T, std::void_t<
-        decltype(&T::resize)
+        decltype(std::declval<T>().resize(std::declval<typename T::size_type>()))
     >> = true;
 
 
@@ -72,7 +72,10 @@ class Range
 public:
     struct Change
     {
-        
+        using iterator = typename Container::iterator;
+
+        iterator first;
+        iterator second;
     };
 
     using change_handler_type = std::function<void(Change change)>;
@@ -106,11 +109,16 @@ public:
             return *this;
         }
 
-        constexpr friend void swap(Value& lhs, Value& rhs) noexcept
+        constexpr friend void swap(Value& lhs, Value& rhs)
         {
             /// Main magic happens here. We use ADL to find this overload
             /// and register swap of two values.
-            std::iter_swap(lhs._iter, rhs._iter);
+            assert(lhs._handler == rhs._handler);
+            assert(lhs._handler && rhs._handler);
+            assert(*lhs._handler);
+
+            (*lhs._handler)({lhs._iter, rhs._iter});
+            std::swap(*lhs._iter, *rhs._iter);
         }
 
         constexpr operator const value_type&() const noexcept
@@ -134,6 +142,7 @@ public:
     using container_type = detail::wrap_value_t<Value, Container>;
     using iterator = typename container_type::iterator;
 
+
     constexpr explicit Range(Container& container)
     {
         if constexpr (detail::is_contiguous_container_v<Container>) {
@@ -145,8 +154,8 @@ public:
                 container.begin(),
                 container.end(),
                 begin(),
-                [&] (auto iter) {
-                    return Value{iter, &_handler};
+                [handler = &_handler] (const auto iter) {
+                    return Value{iter, handler};
                 }
             );
         } else if constexpr (detail::has_push_back_v<Container>) {
@@ -171,15 +180,14 @@ public:
         _handler = std::move(handler);
     }
 
-
     [[nodiscard]]
-    constexpr auto begin() noexcept
+    constexpr auto begin() noexcept -> iterator
     {
         return _container.begin();
     }
 
     [[nodiscard]]
-    constexpr auto end() noexcept
+    constexpr auto end() noexcept -> iterator
     {
         return _container.end();
     }

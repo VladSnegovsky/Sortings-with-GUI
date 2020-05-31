@@ -12,7 +12,8 @@ namespace detail {
  * @brief Sorts [begin, end) diapason on forward iterators using bubble sort.
  */
 template<typename FIter, typename Comp>
-constexpr void bubble(FIter first, FIter last, Comp comparator, std::forward_iterator_tag) {
+constexpr void bubble(FIter first, FIter last, Comp comp)
+{
     if (first == last) {
         return;
     }
@@ -23,7 +24,7 @@ constexpr void bubble(FIter first, FIter last, Comp comparator, std::forward_ite
         auto begin = first;
         auto next_iterator = std::next(begin);
         while (next_iterator != last) {
-            if (comparator(*next_iterator, *begin)) {
+            if (comp(*next_iterator, *begin)) {
                 std::iter_swap(next_iterator, begin);
                 has_changed = true;
             }
@@ -39,15 +40,34 @@ constexpr void bubble(FIter first, FIter last, Comp comparator, std::forward_ite
  * @brief Sorts [begin, end) diapason using bubble sort.
  */
 template<typename Iter, typename Comp>
-constexpr void bubble(Iter first, Iter last, Comp comparator) {
-    detail::bubble(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category{});
+constexpr void bubble(Iter first, Iter last, Comp comp)
+{
+    if (first == last) {
+        return;
+    }
+
+    bool has_changed = true;
+    while (has_changed) {
+        has_changed = false;
+        auto begin = first;
+        auto next_iterator = std::next(begin);
+        while (next_iterator != last) {
+            if (comp(*next_iterator, *begin)) {
+                std::iter_swap(next_iterator, begin);
+                has_changed = true;
+            }
+            begin = next_iterator;
+            std::advance(next_iterator, 1);
+        }
+    }
 }
 
 /**
  * @brief Sorts [begin, end) diapason using bubble sort.
  */
 template<typename Iter>
-constexpr void bubble(Iter first, Iter last) {
+constexpr void bubble(Iter first, Iter last)
+{
     bubble(first, last, std::less<>{});
 }
 
