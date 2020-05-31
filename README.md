@@ -36,6 +36,6 @@ Now in directory `build/bin`directory you have two executables:
 * `gui` — GUI application that demonstrates algorithms;
 
 ### Responsibilities
-* **Misha Lohachov** — implementation of all sort algorithms and general configuration of project.
+* **Misha Lohachov** — implementation of all sort algorithms and general configuration of project
 * **Vlad Snegovsky** — all GUI stuff for project.
 * **Ostap Mykytiuk** — described above gasket between GUI and algorithm; tying up GUI and actual logic.
