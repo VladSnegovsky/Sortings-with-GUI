@@ -6,14 +6,13 @@
 #include <cassert>
 
 namespace lab::sort {
-
 namespace detail {
 
 /**
- * @brief Applies hepify method to heap
+ * @brief Applies heapify method to heap
  */
 template<typename Iter, typename Comp>
-constexpr void _heapify(Iter first, Iter last, const Comp comparator) {
+constexpr void heapify(Iter first, Iter last, const Comp comparator) {
     if (first == last) {
         return;
     }
@@ -46,7 +45,7 @@ constexpr void _heapify(Iter first, Iter last, const Comp comparator) {
  * @brief Restores heap after removing an element
  */
 template<typename Iter, typename Comp>
-constexpr void _restore_heap(Iter first, Iter last, Comp comparator) {
+constexpr void restore_heap(Iter first, Iter last, Comp comparator) {
     if (first == last) {
         return;
     }
@@ -93,13 +92,13 @@ constexpr void _restore_heap(Iter first, Iter last, Comp comparator) {
  */
 template<typename FIter, typename Comp>
 constexpr void heap(FIter first, FIter last, Comp comparator, std::forward_iterator_tag) {
-     detail::_heapify(first, last, comparator);
+     detail::heapify(first, last, comparator);
      int size = std::distance(first, last);
      --size;
     while (size > 0) {
          auto to_swap = std::next(first, size);
          std::iter_swap(to_swap, first);
-         detail::_restore_heap(first, std::next(first, size), comparator);
+         detail::restore_heap(first, std::next(first, size), comparator);
          --size;
     }
 }
@@ -111,7 +110,7 @@ constexpr void heap(FIter first, FIter last, Comp comparator, std::forward_itera
  */
 template<typename Iter, typename Comp>
 constexpr void heap(Iter first, Iter last, Comp comparator) {
-    detail::heap(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category());
+    detail::heap(first, last, comparator, typename std::iterator_traits<Iter>::iterator_category{});
 }
 
 /**
@@ -119,7 +118,7 @@ constexpr void heap(Iter first, Iter last, Comp comparator) {
  */
 template<typename Iter>
 constexpr void heap(Iter first, Iter last) {
-    heap(first, last, std::less<>());
+    heap(first, last, std::less<>{});
 }
 
 } // namespace lab::sort

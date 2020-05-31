@@ -14,7 +14,7 @@ inline constexpr bool is_resizable_v = false;
 
 template<typename T>
 inline constexpr bool is_resizable_v<T, std::void_t<
-        decltype(&T::resize)
+        decltype(std::declval<T>().resize(std::declval<typename T::size_type>()))
     >> = true;
 
 
@@ -71,62 +71,15 @@ class Range
 {
 public:
     struct Change
-    { };
-
-    using change_handler_type = std::function<void(Change)>;
-
-
-    constexpr explicit Range(Container& container)
     {
-        if constexpr (detail::is_contiguous_container_v<Container>) {
-            if constexpr (detail::is_resizable_v<Container>) {
-                _container.resize(std::size(container));
-            }
+        using iterator = typename Container::iterator;
 
-            detail::transform(
-                container.begin(),
-                container.end(),
-                begin(),
-                [&] (auto iter) {
-                    return Value{iter, &_handler};
-                }
-            );
-        } else if constexpr (detail::has_push_back_v<Container>) {
-            detail::transform(
-                container.begin(),
-                container.end(),
-                std::back_inserter(_container),
-                [&] (auto iter) {
-                    return Value{iter, &_handler};
-                }
-            );
-        } else {
-            static_assert(detail::dependent_false_v<Container>,
-                         "This type of container can't be wrapped in range");
-        }
-    }
+        iterator first;
+        iterator second;
+    };
 
-    void set_change_handler(change_handler_type handler) noexcept(
-            std::is_nothrow_move_assignable_v<change_handler_type>
-        )
-    {
-        _handler = std::move(handler);
-    }
+    using change_handler_type = std::function<void(Change change)>;
 
-
-    [[nodiscard]]
-    constexpr auto begin() noexcept
-    {
-        return _container.begin();
-    }
-
-    [[nodiscard]]
-    constexpr auto end() noexcept
-    {
-        return _container.end();
-    }
-
-private:
     class Value
     {
     private:
@@ -156,10 +109,16 @@ private:
             return *this;
         }
 
-        constexpr friend void swap(Value& lhs, Value& rhs) noexcept
+        constexpr friend void swap(Value& lhs, Value& rhs)
         {
-            using std::swap;
-            swap(*lhs._iter, *rhs._iter);
+            /// Main magic happens here. We use ADL to find this overload
+            /// and register swap of two values
+            assert(lhs._handler == rhs._handler);
+            assert(lhs._handler && rhs._handler);
+            assert(*lhs._handler);
+
+            (*lhs._handler)({lhs._iter, rhs._iter});
+            std::swap(*lhs._iter, *rhs._iter);
         }
 
         constexpr operator const value_type&() const noexcept
@@ -180,8 +139,63 @@ private:
         const change_handler_type* _handler{nullptr};
     };
 
+    using container_type = detail::wrap_value_t<Value, Container>;
+    using iterator = typename container_type::iterator;
+
+
+    constexpr explicit Range(Container& container)
+    {
+        if constexpr (detail::is_contiguous_container_v<Container>) {
+            if constexpr (detail::is_resizable_v<Container>) {
+                _container.resize(std::size(container));
+            }
+
+            detail::transform(
+                container.begin(),
+                container.end(),
+                begin(),
+                [handler = &_handler] (const auto iter) {
+                    return Value{iter, handler};
+                }
+            );
+        } else if constexpr (detail::has_push_back_v<Container>) {
+            detail::transform(
+                container.begin(),
+                container.end(),
+                std::back_inserter(_container),
+                [&] (auto iter) {
+                    return Value{iter, &_handler};
+                }
+            );
+        } else {
+            static_assert(detail::dependent_false_v<Container>,
+                         "This type of container can't be wrapped in range");
+        }
+    }
+
+    void set_change_handler(change_handler_type handler) noexcept(
+            std::is_nothrow_move_assignable_v<change_handler_type>
+        )
+    {
+        _handler = std::move(handler);
+    }
+
+    [[nodiscard]]
+    constexpr auto begin() noexcept -> iterator
+    {
+        return _container.begin();
+    }
+
+    [[nodiscard]]
+    constexpr auto end() noexcept -> iterator
+    {
+        return _container.end();
+    }
+
 private:
-    detail::wrap_value_t<Value, Container> _container;
+    /// TODO: use iterator wrapper for range to be indeed stateless
+    /// and allocation-free
+    container_type _container;
     change_handler_type _handler;
 };
 

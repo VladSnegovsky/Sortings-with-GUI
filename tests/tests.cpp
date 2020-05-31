@@ -9,10 +9,10 @@
 
 #include <Utils/Range.hpp>
 
+#include <forward_list>
 #include <algorithm>
 #include <array>
 #include <list>
-#include <forward_list>
 
 TEST_CASE("[lab][utils][range]") {
     using namespace lab;
@@ -32,13 +32,6 @@ TEST_CASE("[lab][utils][range]") {
             auto list = std::list{{3, 2, 1}};
             utils::Range range{list};
         }
-    }
-
-    SECTION("Access") {
-        auto array = std::array{3, 2, 1};
-        utils::Range range{array};
-        sort::insertion(range.begin(), range.end());
-        REQUIRE(array == std::array{1, 2, 3});
     }
 }
 
