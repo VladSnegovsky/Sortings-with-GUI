@@ -112,7 +112,7 @@ public:
         constexpr friend void swap(Value& lhs, Value& rhs)
         {
             /// Main magic happens here. We use ADL to find this overload
-            /// and register swap of two values.
+            /// and register swap of two values
             assert(lhs._handler == rhs._handler);
             assert(lhs._handler && rhs._handler);
             assert(*lhs._handler);
@@ -193,6 +193,8 @@ public:
     }
 
 private:
+    /// TODO: use iterator wrapper for range to be indeed stateless
+    /// and allocation-free
     container_type _container;
     change_handler_type _handler;
 };
