@@ -32,10 +32,10 @@ make
 ```
 
 Now in directory `build/bin`directory you have two executables:
-* `tests` -- tests for sorting algorithms and utilities;
-* `gui` -- GUI application that demonstrates algorithms;
+* `tests` — tests for sorting algorithms and utilities;
+* `gui` — GUI application that demonstrates algorithms;
 
 ### Responsibilities
-* **Misha Lohachov** -- implementation of all sort algorithms and general configuration of project
-* **Vlad Snegovsky** -- all GUI stuff for project
-* **Ostap Mykytiuk** -- described above gasket between GUI and algorithm; tying up GUI and actual logic
+* **Misha Lohachov** — implementation of all sort algorithms and general configuration of project
+* **Vlad Snegovsky** — all GUI stuff for project
+* **Ostap Mykytiuk** — described above gasket between GUI and algorithm; tying up GUI and actual logic
