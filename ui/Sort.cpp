@@ -103,6 +103,18 @@ void Sort::addValue(const QString value)
     );
 }
 
+void Sort::changedSort(const QString sort)
+{
+    bool asc = sort == "asc" ? true : false;
+    bool desc = !asc;
+}
+
+void Sort::changedItType(const QString type)
+{
+    bool forw = type == "forward" ? true : false;
+    bool ra = !forw;
+}
+
 QVariantList Sort::execute()
 {
     QVariantList result;

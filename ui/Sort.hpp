@@ -23,6 +23,8 @@ public:
 public slots:
     void selectType(QString type);
     void addValue(QString value);
+    void changedSort(QString sort);
+    void changedItType(QString type);
     QVariantList execute();
     void clear();
 

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.4
 
 Window {
     visible: true
@@ -192,50 +193,84 @@ Window {
                 }
             }
         }
+        ComboBox{
+            id: _sort
+            width:20
+            Layout.fillHeight: true
+            anchors.left: _slower.right
+            anchors.margins: 5
+
+            model: ["asc", "desc"]
+
+            onCurrentTextChanged: {
+                loop.changedSort(_sort.currentText);
+            }
+        }
+        ComboBox{
+            id: _iteratorType
+            width:50
+            Layout.fillHeight: true
+            anchors.left: _sort.right
+            anchors.margins: 5
+
+            model: ["randon access", "forward"]
+
+            onCurrentTextChanged: {
+                loop.changedItType(_iteratorType.currentText);
+            }
+        }
     }
 
-    ListView {
-        anchors.top: speedControls.bottom
+    ScrollView{
+        anchors.top: _rowLayoutSpeed.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        anchors.topMargin: rowLayout.height + speedControls.height - 40
+        anchors.topMargin: _rowLayout.height + _rowLayoutSpeed.height - 40
 
-        spacing: 5
-        orientation: ListView.Horizontal
-        z: 1
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+        ScrollBar.horizontal.interactive: true
 
-        delegate: Rectangle {
-            width: 120
-            height: 120
-            border.color: "black"
-            color: active ? "red" : "lightblue"
-            border.width: 2
-            radius: 5
+        ListView {
+            spacing: 5
+            orientation: ListView.Horizontal
+            z: 1
 
-            Text {
-                anchors.centerIn: parent
-                font.bold: true
-                font.pointSize: 20
-                text: value
+            delegate: Rectangle {
+                width: 120
+                height: 120
+                border.color: "black"
+                color: active ? "red" : "lightblue"
+                border.width: 2
+                radius: 5
+
+                Text {
+                    anchors.centerIn: parent
+                    font.bold: true
+                    font.pointSize: 20
+                    text: value
+                }
+            }
+
+            model: ListModel {
+                id: array
+
+                function switchColor(index) {
+                    var item = array.get(index);
+                    array.set(index, { active: !item.active })
+                }
+
+                function swapValues(first, second) {
+                    var firstValue = array.get(first).value;
+                    var secondValue = array.get(second).value;
+                    array.set(first, { value: secondValue });
+                    array.set(second, { value: firstValue });
+                }
             }
         }
 
-        model: ListModel {
-            id: array
-
-            function switchColor(index) {
-                var item = array.get(index);
-                array.set(index, { active: !item.active })
-            }
-
-            function swapValues(first, second) {
-                var firstValue = array.get(first).value;
-                var secondValue = array.get(second).value;
-                array.set(first, { value: secondValue });
-                array.set(second, { value: firstValue });
-            }
-        }
     }
+
+
 }
