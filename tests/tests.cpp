@@ -18,11 +18,6 @@ TEST_CASE("[lab][utils][range]") {
     using namespace lab;
 
     SECTION("Creation") {
-        SECTION("Array") {
-            auto array = std::array{3, 2, 1};
-            utils::Range range{array};
-        }
-
         SECTION("Vector") {
             auto vector = std::vector{3, 2, 1};
             utils::Range range{vector};

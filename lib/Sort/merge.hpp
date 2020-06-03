@@ -7,19 +7,19 @@
 #include <forward_list>
 
 namespace lab::sort {
-
 namespace detail {
     
 /**
  * @brief Sorts [begin, end) diapason on random access iterators using merge sort.
  */
 template<typename RAIter, typename Comp>
-constexpr void merge(RAIter first, RAIter last, Comp comparator, const std::random_access_iterator_tag tag) {
+constexpr void merge(RAIter first, RAIter last, Comp comp, const std::random_access_iterator_tag tag)
+{
     if (const auto distance = std::distance(first, last); distance > 1) {
         const auto middle = std::next(first, distance / 2);
-        merge(first, middle, comparator, tag);
-        merge(middle, last, comparator, tag);
-        std::inplace_merge(first, middle, last, comparator);
+        merge(first, middle, comp, tag);
+        merge(middle, last, comp, tag);
+        std::inplace_merge(first, middle, last, comp);
     }
 }
 
@@ -27,7 +27,8 @@ constexpr void merge(RAIter first, RAIter last, Comp comparator, const std::rand
  * @brief Sorts [begin, end) diapason on forward iterators using merge sort.
  */
 template<typename FIter, typename Comp>
-constexpr void merge(FIter first, FIter last, Comp comparator, const std::forward_iterator_tag tag) {
+constexpr void merge(FIter first, FIter last, Comp comp, const std::forward_iterator_tag tag)
+{
     if (first == last || std::next(first) == last) {
         return;
     }
@@ -36,8 +37,8 @@ constexpr void merge(FIter first, FIter last, Comp comparator, const std::forwar
     const auto middle = std::next(first, std::distance(first, last) / 2);
 
     std::move(first, middle, std::front_inserter(container));
-    merge(container.begin(), container.end(), comparator, tag);
-    merge(middle, last, comparator, tag);
+    merge(container.begin(), container.end(), comp, tag);
+    merge(middle, last, comp, tag);
 
     std::merge(
         std::make_move_iterator(container.begin()), 
@@ -45,7 +46,7 @@ constexpr void merge(FIter first, FIter last, Comp comparator, const std::forwar
         std::make_move_iterator(middle), 
         std::make_move_iterator(last), 
         first, 
-        comparator
+        comp
     );
 }
 
