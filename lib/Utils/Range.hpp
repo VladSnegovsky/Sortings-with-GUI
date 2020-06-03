@@ -10,21 +10,11 @@ namespace lab::utils {
 namespace detail {
 
 template<typename T, typename = void>
-inline constexpr bool is_resizable_v = false;
+inline constexpr bool is_reservable_v = false;
 
 template<typename T>
-inline constexpr bool is_resizable_v<T, std::void_t<
-        decltype(std::declval<T>().resize(std::declval<typename T::size_type>()))
-    >> = true;
-
-
-template<typename T, typename = void>
-inline constexpr bool is_contiguous_container_v = false;
-
-template<typename T>
-inline constexpr bool is_contiguous_container_v<T, std::void_t<
-        decltype(std::declval<T>().data()), 
-        decltype(std::declval<T>().size())
+inline constexpr bool is_reservable_v<T, std::void_t<
+        decltype(std::declval<T>().reserve(std::declval<typename T::size_type>()))
     >> = true;
 
 
@@ -44,9 +34,6 @@ inline constexpr bool dependent_false_v = false;
 template<typename NewType, template<typename, typename...> typename Container, typename Type, typename... Args>
 constexpr auto wrap_value_impl(Container<Type, Args...>) noexcept -> Container<NewType, Args...>;
 
-template<typename NewType, typename Type, auto Size>
-constexpr auto wrap_value_impl(std::array<Type, Size>) noexcept -> std::array<NewType, Size>;
-
 template<typename Type, typename Container>
 using wrap_value_t = decltype(wrap_value_impl<Type>(std::declval<Container>()));
 
@@ -64,7 +51,7 @@ constexpr void transform(InputIt first, InputIt last, OutputIt result, UnaryOp u
 
 /**
  * @brief Wrapper around sortable container with automatic notification
- * about swapped values.
+ *  about swapped values.
  */
 template<typename Container>
 class Range
@@ -87,25 +74,20 @@ public:
         using value_type = typename Container::value_type;
 
     public: 
-        constexpr Value() noexcept = default;
-
         constexpr Value(Value&& that) noexcept
         {
             _iter = that._iter;
-            that._iter = {};
-
             _handler = that._handler;
+            that._iter = {};
             that._handler = nullptr;
         }
 
         Value& operator=(Value&& that) noexcept
         {
             _iter = that._iter;
-            that._iter = {};
-
             _handler = that._handler;
+            that._iter = {};
             that._handler = nullptr;
-
             return *this;
         }
 
@@ -145,20 +127,11 @@ public:
 
     constexpr explicit Range(Container& container)
     {
-        if constexpr (detail::is_contiguous_container_v<Container>) {
-            if constexpr (detail::is_resizable_v<Container>) {
-                _container.resize(std::size(container));
-            }
+        if constexpr (detail::is_reservable_v<Container>) {
+            _container.reserve(std::size(container));
+        }
 
-            detail::transform(
-                container.begin(),
-                container.end(),
-                begin(),
-                [handler = &_handler] (const auto iter) {
-                    return Value{iter, handler};
-                }
-            );
-        } else if constexpr (detail::has_push_back_v<Container>) {
+        if constexpr (detail::has_push_back_v<Container>) {
             detail::transform(
                 container.begin(),
                 container.end(),

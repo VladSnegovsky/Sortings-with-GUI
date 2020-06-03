@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.4
 
 Window {
     visible: true
@@ -93,7 +94,7 @@ Window {
             }
 
             onCurrentIndexChanged: {
-                sort.selectType(items.get(currentIndex).text);
+                sort.selectSortType(items.get(currentIndex).text);
             }
         }
 
@@ -192,9 +193,37 @@ Window {
                 }
             }
         }
+
+        ComboBox{
+            id: orderType
+            width:20
+            Layout.fillHeight: true
+            anchors.left: slowerButton.right
+            anchors.margins: 5
+
+            model: ["Asc", "Desc"]
+
+            onCurrentTextChanged: {
+                sort.selectOrderType(orderType.currentText);
+            }
+        }
+
+        ComboBox{
+            id: containerType
+            width:50
+            Layout.fillHeight: true
+            anchors.left: orderType.right
+            anchors.margins: 5
+
+            model: ["Vector", "List"]
+
+            onCurrentTextChanged: {
+                sort.selectContainerType(containerType.currentText);
+            }
+        }
     }
 
-    ListView {
+    ScrollView{
         anchors.top: speedControls.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -202,39 +231,52 @@ Window {
 
         anchors.topMargin: rowLayout.height + speedControls.height - 40
 
-        spacing: 5
-        orientation: ListView.Horizontal
-        z: 1
+        Flickable {
+            id: flickable
+            clip: true
 
-        delegate: Rectangle {
-            width: 120
-            height: 120
-            border.color: "black"
-            color: active ? "red" : "lightblue"
-            border.width: 2
-            radius: 5
-
-            Text {
-                anchors.centerIn: parent
-                font.bold: true
-                font.pointSize: 20
-                text: value
+            ScrollBar.horizontal: ScrollBar {
+                parent: flickable.parent
+                policy: ScrollBar.AlwaysOn
+                interactive: true
             }
         }
 
-        model: ListModel {
-            id: array
+        ListView {
+            spacing: 5
+            orientation: ListView.Horizontal
+            z: 1
 
-            function switchColor(index) {
-                var item = array.get(index);
-                array.set(index, { active: !item.active })
+            delegate: Rectangle {
+                width: 120
+                height: 120
+                border.color: "black"
+                color: active ? "red" : "lightblue"
+                border.width: 2
+                radius: 5
+
+                Text {
+                    anchors.centerIn: parent
+                    font.bold: true
+                    font.pointSize: 20
+                    text: value
+                }
             }
 
-            function swapValues(first, second) {
-                var firstValue = array.get(first).value;
-                var secondValue = array.get(second).value;
-                array.set(first, { value: secondValue });
-                array.set(second, { value: firstValue });
+            model: ListModel {
+                id: array
+
+                function switchColor(index) {
+                    var item = array.get(index);
+                    array.set(index, { active: !item.active })
+                }
+
+                function swapValues(first, second) {
+                    var firstValue = array.get(first).value;
+                    var secondValue = array.get(second).value;
+                    array.set(first, { value: secondValue });
+                    array.set(second, { value: firstValue });
+                }
             }
         }
     }
