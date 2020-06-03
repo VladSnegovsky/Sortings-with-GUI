@@ -47,19 +47,19 @@ constexpr auto algorithm_from_string(const std::string_view name) noexcept -> fu
         return sort::bubble<It, Comp>;
     }
 
-    if (name == "HeapSort") {
-        return sort::heap<It, Comp>;
-    }
-
     if (name == "InsertionSort") {
         return sort::insertion<It, Comp>;
     }
 
-    if (name == "MergeSort") {
-        return sort::merge<It, Comp>;
+    if (name == "HeapSort") {
+        return sort::heap<It, Comp>;
     }
 
     if (name == "QuickSort") {
+        return sort::quick<It, Comp>;
+    }
+
+    if (name == "MergeSort") {
         return sort::quick<It, Comp>;
     }
 
