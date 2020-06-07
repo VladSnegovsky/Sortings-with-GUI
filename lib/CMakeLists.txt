@@ -1,14 +1,9 @@
 project(libsort CXX)
 
 set(SRC_LIST
-    Sort/bubble.hpp
-    Sort/heap.hpp
-    Sort/insertion.hpp
-    Sort/merge.hpp
-    Sort/quick.hpp
-    Sort/selection.hpp
-
-    Utils/Range.hpp
+    Sort/Change.hpp
+    Sort/Sort.hpp
+    Sort/Type.hpp
 )
 
 add_library(${PROJECT_NAME} INTERFACE)
