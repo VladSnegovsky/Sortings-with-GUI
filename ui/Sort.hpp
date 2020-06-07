@@ -19,7 +19,9 @@ public:
     ~Sort() noexcept;
 
 public slots:
-    void selectType(QString type);
+    void selectContainerType(QString type);
+    void selectOrderType(QString type);
+    void selectSortType(QString type);
     void addValue(QString value);
     QVariantList execute();
     void clear();
