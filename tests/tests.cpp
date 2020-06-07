@@ -1,36 +1,14 @@
 #include "catch.hpp"
 
-#include <Sort/bubble.hpp>
-#include <Sort/heap.hpp>
-#include <Sort/insertion.hpp>
-#include <Sort/merge.hpp>
-#include <Sort/quick.hpp>
-#include <Sort/selection.hpp>
-
-#include <Utils/Range.hpp>
-
 #include <forward_list>
 #include <algorithm>
 #include <array>
 #include <list>
 
-TEST_CASE("[lab][utils][range]") {
-    using namespace lab;
-
-    SECTION("Creation") {
-        SECTION("Vector") {
-            auto vector = std::vector{3, 2, 1};
-            utils::Range range{vector};
-        }
-
-        SECTION("List") {
-            auto list = std::list{{3, 2, 1}};
-            utils::Range range{list};
-        }
-    }
-}
+#include <Sort/Sort.hpp>
 
 TEST_CASE("[lab][sort]") {
+    using namespace lab::sort::type;
     using namespace lab::sort;
 
     const std::vector<std::vector<int>> RAIter_cases = {
@@ -84,14 +62,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -100,14 +78,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -116,14 +94,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    bubble(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Bubble>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
@@ -134,14 +112,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -150,14 +128,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -166,14 +144,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    quick(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Quick>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
@@ -184,14 +162,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -200,14 +178,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -216,14 +194,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    insertion(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Insertion>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
@@ -234,14 +212,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -250,14 +228,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -266,14 +244,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    merge(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Merge>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
@@ -284,14 +262,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -300,14 +278,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -316,14 +294,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    selection(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Selection>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
@@ -334,14 +312,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == RAIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = RAIter_cases;
                 for (size_t case_id = 0; case_id < RAIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == RAIter_reverse_expected[case_id]);
                 }
             }
@@ -350,14 +328,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == BIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = BIter_cases;
                 for (size_t case_id = 0; case_id < BIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == BIter_reverse_expected[case_id]);
                 }
             }
@@ -366,14 +344,14 @@ TEST_CASE("[lab][sort]") {
             SECTION("Direct order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::less{});
                     REQUIRE(results[case_id] == FIter_direct_expected[case_id]);
                 }
             }
             SECTION("Reverse order") {
                 auto results = FIter_cases;
                 for (size_t case_id = 0; case_id < FIter_cases.size(); ++case_id) {
-                    heap(results[case_id].begin(), results[case_id].end(), std::greater<int>());
+                    Sort<Heap>{}(results[case_id].begin(), results[case_id].end(), std::greater{});
                     REQUIRE(results[case_id] == FIter_reverse_expected[case_id]);
                 }
             }
