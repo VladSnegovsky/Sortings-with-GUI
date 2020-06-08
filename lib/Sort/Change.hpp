@@ -58,7 +58,7 @@ template<typename It>
 struct Compare
 {
     It first;
-    It last;
+    It second;
 };
 
 template<typename It>

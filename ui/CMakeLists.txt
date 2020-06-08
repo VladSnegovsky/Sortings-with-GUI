@@ -1,6 +1,6 @@
 project(GUI)
 
-find_package(Qt5 COMPONENTS Core Quick)
+find_package(Qt5 COMPONENTS Core Quick Qml REQUIRED)
 
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
@@ -17,7 +17,7 @@ set(SRC_LIST
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${RESOURCES})
 
 # Instruct against which modules application should be linked
-qt5_use_modules(${PROJECT_NAME} Core Quick)
+qt5_use_modules(${PROJECT_NAME} Core Quick Qml)
 
 # Link with core library
 target_link_libraries(${PROJECT_NAME} libsort)

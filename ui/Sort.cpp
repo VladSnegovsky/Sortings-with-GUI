@@ -5,6 +5,7 @@
 #include <Sort/Type.hpp>
 #include <type_traits>
 #include <algorithm>
+#include <cassert>
 #include <variant>
 #include <vector>
 #include <tuple>
@@ -288,7 +289,7 @@ QVariantList Sort::execute()
 
                             return std::visit(
                                 [&] (const auto& change) {
-                                    using Change = std::remove_cv_t<std::remove_reference_t<decltype(value)>>;
+                                    using Change = std::remove_cv_t<std::remove_reference_t<decltype(change)>>;
 
                                     QVariant variant;
 
@@ -319,6 +320,15 @@ QVariantList Sort::execute()
                                                 index(change.last)
                                             }
                                         );
+                                    } else if constexpr (std::is_same_v<Change, sort::change::Compare<It>>) {
+                                        variant.setValue(
+                                            change::Compare{
+                                                index(change.first),
+                                                index(change.second)
+                                            }
+                                        );
+                                    } else {
+                                        assert(false);
                                     }
 
                                     return variant;

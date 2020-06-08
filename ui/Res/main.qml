@@ -40,9 +40,6 @@ Window {
 
             var change = impl.changes[impl.index];
 
-            console.log(change instanceof "lab::ui");
-            return;
-
             switch (impl.state) {
                 case 0:
                     array.switchColor(change.first);
