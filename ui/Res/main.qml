@@ -12,6 +12,8 @@ Window {
     property int previousFirst: 0
     property int previousLast: 0
     property int lastPivot: -1
+    property int prevF: -1
+    property int prevL: -1
 
     Timer {
         id: loop
@@ -47,8 +49,8 @@ Window {
             if (change.type === "Swap"){
                 switch (impl.state) {
                     case 0:
-                        array.switchColor(change.first);
-                        array.switchColor(change.second);
+                        //array.switchColor(change.first);
+                        //array.switchColor(change.second);
                         impl.state = 1;
                         break;
 
@@ -58,8 +60,8 @@ Window {
                         break;
 
                     case 2:
-                        array.switchColor(change.first);
-                        array.switchColor(change.second);
+                        //array.switchColor(change.first);
+                        //array.switchColor(change.second);
                         impl.state = 0;
 
                         if (impl.index == impl.changes.length - 1) {
@@ -73,13 +75,21 @@ Window {
             }
             else if (change.type == "Compare"){
                 impl.index++;
+                if (prevF != -1){
+                    array.switchColor(prevF);
+                    array.switchColor(prevL);
+                }
+                array.switchColor(change.first);
+                array.switchColor(change.second);
+                prevF = change.first;
+                prevL = change.second;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
                     return stop();
                 }
             }
             else if (change.type == "SelectSubrange"){
-                array.showRange(change.first, change.second, 0);
+                //array.showRange(change.first, change.second, 0);
                 impl.index++;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
@@ -87,7 +97,7 @@ Window {
                 }
             }
             else if (change.type == "SelectPivot"){
-                array.showPivot(change.value, 0);
+                //array.showPivot(change.value, 0);
                 impl.index++;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
@@ -95,7 +105,7 @@ Window {
                 }
             }
             else if (change.type == "MergeSubranges"){
-                array.showRange(change.first, change.second, 0);
+                //array.showRange(change.first, change.second, 0);
                 impl.index++;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
@@ -313,6 +323,11 @@ Window {
                     var secondValue = array.get(second).value;
                     array.set(first, { value: secondValue });
                     array.set(second, { value: firstValue });
+                }
+
+                function changeColor(index){
+                    var item = array.get(index);
+                    array.set(index, { color: "green"});
                 }
 
 
