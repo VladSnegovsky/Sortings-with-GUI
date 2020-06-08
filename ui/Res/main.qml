@@ -47,71 +47,89 @@ Window {
             var change = impl.changes[impl.index];
 
             if (change.type === "Swap"){
-                switch (impl.state) {
-                    case 0:
-                        //array.switchColor(change.first);
-                        //array.switchColor(change.second);
-                        impl.state = 1;
-                        break;
+//                switch (impl.state) {
+//                    case 0:
+//                        array.switchColor(change.first);
+//                        array.switchColor(change.second);
+//                        impl.state = 1;
+//                        break;
 
-                    case 1:
+//                    case 1:
                         array.swapValues(change.first, change.second);
-                        impl.state = 2;
-                        break;
+//                        impl.state = 2;
+//                        break;
 
-                    case 2:
-                        //array.switchColor(change.first);
-                        //array.switchColor(change.second);
-                        impl.state = 0;
+//                    case 2:
+//                        array.switchColor(change.first);
+//                        array.switchColor(change.second);
+//                        impl.state = 0;
 
                         if (impl.index == impl.changes.length - 1) {
                             impl.index = 0;
+                            if (prevF != -1){
+                                array.switchColor(prevL);
+                                array.switchColor(prevF);
+                            }
+                            prevL = -1;
+                            prevF = -1;
                             return stop();
                         }
 
                         ++impl.index;
-                        break;
-                }
+//                        break;
+//                }
             }
             else if (change.type == "Compare"){
-                impl.index++;
                 if (prevF != -1){
-                    array.switchColor(prevF);
                     array.switchColor(prevL);
+                    array.switchColor(prevF);
                 }
+
+                var item1 = array.get(change.first);
+                var item2 = array.get(change.first);
+
                 array.switchColor(change.first);
                 array.switchColor(change.second);
-                prevF = change.first;
+
                 prevL = change.second;
-                if (impl.index == impl.changes.length - 1) {
-                    impl.index = 0;
-                    return stop();
-                }
-            }
-            else if (change.type == "SelectSubrange"){
-                //array.showRange(change.first, change.second, 0);
+                prevF = change.first;
+
                 impl.index++;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
+                    prevL = -1;
+                    prevF = -1;
                     return stop();
                 }
             }
-            else if (change.type == "SelectPivot"){
-                //array.showPivot(change.value, 0);
+            else {
                 impl.index++;
-                if (impl.index == impl.changes.length - 1) {
-                    impl.index = 0;
-                    return stop();
-                }
             }
-            else if (change.type == "MergeSubranges"){
-                //array.showRange(change.first, change.second, 0);
-                impl.index++;
-                if (impl.index == impl.changes.length - 1) {
-                    impl.index = 0;
-                    return stop();
-                }
-            }
+
+//            else if (change.type == "SelectSubrange"){
+//                //array.showRange(change.first, change.second, 0);
+//                impl.index++;
+//                if (impl.index == impl.changes.length - 1) {
+//                    impl.index = 0;
+//                    return stop();
+//                }
+//            }
+//            else if (change.type == "SelectPivot"){
+//                //array.showPivot(change.value, 0);
+//                impl.index++;
+//                if (impl.index == impl.changes.length - 1) {
+//                    impl.index = 0;
+//                    return stop();
+//                }
+//            }
+//            else if (change.type == "MergeSubranges"){
+//                //array.showRange(change.first, change.second, 0);
+//                impl.index++;
+//                if (impl.index == impl.changes.length - 1) {
+//                    impl.index = 0;
+//                    return stop();
+//                }
+//            }
         }
     }
 

@@ -7,7 +7,6 @@ set(TOP_DIR ${CMAKE_SOURCE_DIR})
 set(TESTS_DIR ${TOP_DIR}/tests)
 set(UI_DIR ${TOP_DIR}/ui)
 set(LIB_DIR ${TOP_DIR}/lib)
-set(CMAKE_BUILD_TYPE Debug)
 # SET (CMAKE_CXX_COMPILER CACHE STRING "/usr/bin/clang++" FORCE)
 # SET (CMAKE_C_COMPILER  CACHE STRING "/usr/bin/clang" FORCE)
 

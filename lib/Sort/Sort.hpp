@@ -7,7 +7,6 @@
 #include <iterator>
 #include <variant>
 #include <vector>
-#include <iostream>
 
 namespace detail {
 
@@ -113,14 +112,13 @@ constexpr It iterFind_if(It first, It last, Comp p)
  * @brief Creates a partition of a range
  */
 template<typename It, typename Comp>
-It iterPartition(It first, It last, std::vector<lab::sort::change::Change<It>> &changes, Comp p)
+It iterPartition(It first, It last, Comp p)
 {
     first = iterFind_if(first, last, p);
     if (first == last) return first;
  
     for (auto i = std::next(first); i != last; ++i) {
         if (p(i)) {
-            changes.emplace_back(lab::sort::change::Swap<It>{i, first});
             std::iter_swap(i, first);
             ++first;
         }
@@ -144,15 +142,14 @@ constexpr void quickSort(FIter first, FIter last, std::vector<lab::sort::change:
     changes.emplace_back(lab::sort::change::Swap<FIter>{std::next(first, distance / 2), end});
     std::iter_swap(std::next(first, distance / 2), end);
 
-    auto mid = iterPartition(first, end, changes, [&](const auto &el) {
+    auto mid = iterPartition(first, end, [&](const auto &el) {
         changes.emplace_back(lab::sort::change::Compare<FIter>{el, end});
         if (comparator(*el, *end)) {
-//             changes.emplace_back(lab::sort::change::Swap<FIter>{el, end});
+            changes.emplace_back(lab::sort::change::Swap<FIter>{el, end});
             return true;
         }
         return false;
     });
-    changes.emplace_back(lab::sort::change::Swap<FIter>{mid, end});
     std::iter_swap(mid, end);
     changes.emplace_back(lab::sort::change::SelectPivot<FIter>{mid});
 
@@ -176,15 +173,14 @@ constexpr void quickSort(RAIter first, RAIter last, std::vector<lab::sort::chang
     changes.emplace_back(lab::sort::change::Swap<RAIter>{std::next(first, distance / 2), end});
     std::iter_swap(std::next(first, distance / 2), end);
 
-    auto mid = iterPartition(first, end, changes, [&](const auto &el) {
+    auto mid = iterPartition(first, end, [&](const auto &el) {
         changes.emplace_back(lab::sort::change::Compare<RAIter>{el, end});
         if (comparator(*el, *end)) {
-//             changes.emplace_back(lab::sort::change::Swap<RAIter>{el, end});
+            changes.emplace_back(lab::sort::change::Swap<RAIter>{el, end});
             return true;
         }
         return false;
     });
-    changes.emplace_back(lab::sort::change::Swap<RAIter>{mid, end});
     std::iter_swap(mid, end);
     changes.emplace_back(lab::sort::change::SelectPivot<RAIter>{mid});
 
@@ -200,7 +196,7 @@ void selectionSort(It first, It last, std::vector<lab::sort::change::Change<It>>
         for (auto it = first; it != last; ++it) { 
             auto key = it;
             if (key != first) {
-//                 changes.emplace_back(lab::sort::change::Compare<It>{key, std::prev(key)});
+                changes.emplace_back(lab::sort::change::Compare<It>{key, std::prev(key)});
                 while ((key != first) && (comp(*key, *std::prev(key)))) {
                     changes.emplace_back(lab::sort::change::Swap<It>{key, std::prev(key)});
                     std::iter_swap(key, std::prev(key));
@@ -236,55 +232,34 @@ void selectionSort(It first, It last, std::vector<lab::sort::change::Change<It>>
  * @brief Merges two ranges into first
  */
 template<typename It, typename Comp>
-void advanced_merge(It first, It middle, It last, std::vector<lab::sort::change::Change<It>> &changes, Comp comp) {
+void advanced_merge(It first, It middle, It last, Comp comp) {
     std::list<typename std::iterator_traits<It>::value_type> buffer(std::distance(first, last));
-    std::vector<int> indexes;
     auto buffer_it = buffer.begin();
     auto first_range_it = first;
     auto second_range_it = middle;
     while ((first_range_it != middle) && (second_range_it != last)) {
         if (comp(*first_range_it, *second_range_it)) {
-            indexes.push_back(std::distance(first, first_range_it));
             std::iter_swap(buffer_it, first_range_it);
             ++first_range_it;
         } else {
-            indexes.push_back(std::distance(first, second_range_it));
             std::iter_swap(buffer_it, second_range_it);
             ++second_range_it;
         }
         ++buffer_it;
     }
     while (first_range_it != middle) {
-        indexes.push_back(std::distance(first, first_range_it));
         std::iter_swap(buffer_it, first_range_it);
         ++first_range_it;
         ++buffer_it;
     }
     while (second_range_it != last) {
-        indexes.push_back(std::distance(first, second_range_it));
         std::iter_swap(buffer_it, second_range_it);
         ++second_range_it;
         ++buffer_it;
     }
-    
-    auto t_first = first;
     for (auto it = buffer.begin(); it != buffer.end(); ++it) {
-        std::iter_swap(it, t_first);
-        ++t_first;
-    }
-    
-    for (int fixed_index = 0; fixed_index < indexes.size(); ++fixed_index) {
-        if (indexes[fixed_index] != fixed_index) {
-            int pos = fixed_index;
-            for (int i = fixed_index; i < indexes.size(); ++i) {
-                if (indexes[i] == fixed_index) {
-                    pos = i;
-                    break;
-                }
-            }
-            std::swap(indexes[pos], indexes[fixed_index]);
-            changes.emplace_back(lab::sort::change::Swap{std::next(first, indexes[pos]), std::next(first, indexes[fixed_index])});
-        }
+        std::iter_swap(it, first);
+        ++first;
     }
 }
 
@@ -401,9 +376,9 @@ struct Sort<type::Merge>
                                std::make_move_iterator(right_changes.begin()), std::make_move_iterator(right_changes.end()));
                 
                 changes.emplace_back(lab::sort::change::MergeSubranges<It>{first, last});
-                detail::advanced_merge(first, middle, last, changes, comp);
+                detail::advanced_merge(first, middle, last, comp);
             }
-//             std::cout<<changes.size()<<std::endl;
+
             return changes;
         }
 };
@@ -419,7 +394,7 @@ struct Sort<type::Heap>
         detail::heapify(first, last, changes, comp);
         int size = std::distance(first, last);
         --size;
-        while (size >= 0) {
+        while (size > 0) {
             auto to_swap = std::next(first, size);
             changes.emplace_back(lab::sort::change::Swap{to_swap, first});
             std::iter_swap(to_swap, first);

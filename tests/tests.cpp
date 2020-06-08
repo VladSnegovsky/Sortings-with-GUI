@@ -18,7 +18,6 @@ TEST_CASE("[lab][sort]") {
         {1, 0, -10, 12, 1002, 0, 20},
         {1, 1, 2, 3, 3, 3, 10},
         {10, 9, 8, 8, 1, 1, -1},
-        {3, 1, 3, 2, 7},
     };
     auto RAIter_direct_expected = RAIter_cases;
     auto RAIter_reverse_expected = RAIter_cases;
@@ -35,7 +34,6 @@ TEST_CASE("[lab][sort]") {
         {1, 0, -10, 12, 1002, 0, 20},
         {1, 1, 2, 3, 3, 3, 10},
         {10, 9, 8, 8, 1, 1, -1},
-        {3, 1, 3, 2, 7},
     };
     auto FIter_direct_expected = FIter_cases;
     auto FIter_reverse_expected = FIter_cases;
@@ -51,7 +49,6 @@ TEST_CASE("[lab][sort]") {
         {1, 0, -10, 12, 1002, 0, 20},
         {1, 1, 2, 3, 3, 3, 10},
         {10, 9, 8, 8, 1, 1, -1},
-        {3, 1, 3, 2, 7},
     };
     auto BIter_direct_expected = BIter_cases;
     auto BIter_reverse_expected = BIter_cases;
