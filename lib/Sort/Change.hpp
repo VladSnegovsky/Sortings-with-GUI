@@ -55,11 +55,23 @@ MergeSubranges(It, It) -> MergeSubranges<It>;
 
 
 template<typename It>
+struct Compare
+{
+    It first;
+    It last;
+};
+
+template<typename It>
+Compare(It, It) -> Compare<It>;
+
+
+template<typename It>
 using Change = detail::parametrize<It,
     Swap,
     SelectPivot,
     SelectSubrange,
-    MergeSubranges
+    MergeSubranges,
+    Compare
 >;
 
 } // namespace lab::sort::change
