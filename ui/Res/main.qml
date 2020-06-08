@@ -9,6 +9,10 @@ Window {
     width: 640
     height: 480
 
+    property int previousFirst: 0
+    property int previousLast: 0
+    property int lastPivot: -1
+
     Timer {
         id: loop
         running: false
@@ -40,30 +44,63 @@ Window {
 
             var change = impl.changes[impl.index];
 
-            switch (impl.state) {
-                case 0:
-                    array.switchColor(change.first);
-                    array.switchColor(change.second);
-                    impl.state = 1;
-                    break;
+            if (change.type === "Swap"){
+                switch (impl.state) {
+                    case 0:
+                        array.switchColor(change.first);
+                        array.switchColor(change.second);
+                        impl.state = 1;
+                        break;
 
-                case 1:
-                    array.swapValues(change.first, change.second);
-                    impl.state = 2;
-                    break;
+                    case 1:
+                        array.swapValues(change.first, change.second);
+                        impl.state = 2;
+                        break;
 
-                case 2:
-                    array.switchColor(change.first);
-                    array.switchColor(change.second);
-                    impl.state = 0;
+                    case 2:
+                        array.switchColor(change.first);
+                        array.switchColor(change.second);
+                        impl.state = 0;
 
-                    if (impl.index == impl.changes.length - 1) {
-                        impl.index = 0;
-                        return stop();
-                    }
+                        if (impl.index == impl.changes.length - 1) {
+                            impl.index = 0;
+                            return stop();
+                        }
 
-                    ++impl.index;
-                    break;
+                        ++impl.index;
+                        break;
+                }
+            }
+            else if (change.type == "Compare"){
+                impl.index++;
+                if (impl.index == impl.changes.length - 1) {
+                    impl.index = 0;
+                    return stop();
+                }
+            }
+            else if (change.type == "SelectSubrange"){
+                array.showRange(change.first, change.second, 0);
+                impl.index++;
+                if (impl.index == impl.changes.length - 1) {
+                    impl.index = 0;
+                    return stop();
+                }
+            }
+            else if (change.type == "SelectPivot"){
+                array.showPivot(change.value, 0);
+                impl.index++;
+                if (impl.index == impl.changes.length - 1) {
+                    impl.index = 0;
+                    return stop();
+                }
+            }
+            else if (change.type == "MergeSubranges"){
+                array.showRange(change.first, change.second, 0);
+                impl.index++;
+                if (impl.index == impl.changes.length - 1) {
+                    impl.index = 0;
+                    return stop();
+                }
             }
         }
     }
@@ -277,6 +314,49 @@ Window {
                     array.set(first, { value: secondValue });
                     array.set(second, { value: firstValue });
                 }
+
+
+
+
+
+
+
+                function showRange(first, last, off){
+                    showPivot(0, 0, 1);
+                    if (!off){
+                        for (let j = previousFirst; j <= previousLast; j++)
+                            array.set(j, { color: "lightblue" })
+                        for (let i = first; i <= last; i++)
+                            array.set(i, { color: "grey" })
+                        previousFirst = first;
+                        previousLast = last;
+                    }
+                    else {
+                        for (let j = previousFirst; j <= previousLast; j++)
+                            array.set(j, { color: "lightblue" })
+                        previousFirst = 0;
+                        previousLast = 0;
+                    }
+                }
+
+                function showPivot(index, off){
+                    if(!off){
+                        if (lastPivot != -1)
+                            array.set(lastPivot, { color: "grey" })
+                        array.set(index, { color: "darkgrey" });
+                        lastPivot = index;
+                    }
+                    else {
+                        array.set(lastPivot, { color: "grey" });
+                        lastPivot = -1;
+                    }
+                }
+
+
+
+
+
+
             }
         }
     }

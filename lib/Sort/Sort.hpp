@@ -396,6 +396,7 @@ struct Sort<type::Heap>
         --size;
         while (size > 0) {
             auto to_swap = std::next(first, size);
+            changes.emplace_back(lab::sort::change::Swap{to_swap, first});
             std::iter_swap(to_swap, first);
             detail::restore_heap(first, std::next(first, size), changes, comp);
             --size;
