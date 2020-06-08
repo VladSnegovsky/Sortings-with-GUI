@@ -4,26 +4,23 @@
 #include <QObject>
 #include <cstdint>
 
-namespace lab::ui
+namespace lab::ui::change
 {
 
-/**
- * @brief Change of two values with given indexes.
- */
-class Change
+class Swap
 {
     Q_GADGET
     Q_PROPERTY(unsigned int first READ first)
     Q_PROPERTY(unsigned int second READ second)
 public:
-    Change(const std::size_t first, const std::size_t second) noexcept :
+    Swap(const std::size_t first, const std::size_t second) noexcept :
         _first{first},
         _second{second}
     { }
 
-    Change() = default;
-    Change(const Change&) = default;
-    Change& operator=(const Change&) = default;
+    Swap() = default;
+    Swap(const Swap&) = default;
+    Swap& operator=(const Swap&) = default;
 
     std::size_t first() const noexcept
     {
@@ -40,6 +37,91 @@ private:
     std::size_t _second{0};
 };
 
-} // namespace lab::ui
+class SelectPivot
+{
+    Q_GADGET
+    Q_PROPERTY(unsigned int value READ value)
+public:
+    explicit SelectPivot(const std::size_t value) noexcept :
+        _value{value}
+    { }
 
-Q_DECLARE_METATYPE(lab::ui::Change);
+    SelectPivot() = default;
+    SelectPivot(const SelectPivot&) = default;
+    SelectPivot& operator=(const SelectPivot&) = default;
+
+    std::size_t value() const noexcept
+    {
+        return _value;
+    }
+
+private:
+    std::size_t _value{0};
+};
+
+class SelectSubrange
+{
+    Q_GADGET
+    Q_PROPERTY(unsigned int first READ first)
+    Q_PROPERTY(unsigned int last READ last)
+public:
+    SelectSubrange(const std::size_t first, const std::size_t last) noexcept :
+        _first{first},
+        _last{last}
+    { }
+
+    SelectSubrange() = default;
+    SelectSubrange(const SelectSubrange&) = default;
+    SelectSubrange& operator=(const SelectSubrange&) = default;
+
+    std::size_t first() const noexcept
+    {
+        return _first;
+    }
+
+    std::size_t last() const noexcept
+    {
+        return _last;
+    }
+
+private:
+    std::size_t _first{0};
+    std::size_t _last{0};
+};
+
+class MergeSubranges
+{
+    Q_GADGET
+    Q_PROPERTY(unsigned int first READ first)
+    Q_PROPERTY(unsigned int last READ last)
+public:
+    MergeSubranges(const std::size_t first, const std::size_t last) noexcept :
+        _first{first},
+        _last{last}
+    { }
+
+    MergeSubranges() = default;
+    MergeSubranges(const MergeSubranges&) = default;
+    MergeSubranges& operator=(const MergeSubranges&) = default;
+
+    std::size_t first() const noexcept
+    {
+        return _first;
+    }
+
+    std::size_t last() const noexcept
+    {
+        return _last;
+    }
+
+private:
+    std::size_t _first{0};
+    std::size_t _last{0};
+};
+
+} // namespace lab::ui::change
+
+Q_DECLARE_METATYPE(lab::ui::change::Swap);
+Q_DECLARE_METATYPE(lab::ui::change::SelectPivot);
+Q_DECLARE_METATYPE(lab::ui::change::SelectSubrange);
+Q_DECLARE_METATYPE(lab::ui::change::MergeSubranges);

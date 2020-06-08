@@ -1,14 +1,8 @@
 #include "Sort.hpp"
 #include "Change.hpp"
 
-#include <Sort/bubble.hpp>
-#include <Sort/heap.hpp>
-#include <Sort/insertion.hpp>
-#include <Sort/merge.hpp>
-#include <Sort/quick.hpp>
-#include <Sort/selection.hpp>
-#include <Utils/Range.hpp>
-#include <QDebug>
+#include <Sort/Sort.hpp>
+#include <Sort/Type.hpp>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -30,45 +24,6 @@ struct variant_storage
 
     std::variant<Cs<T>...> data;
 };
-
-/**
- * @brief Alias to help compiler deduce return type.
- */
-template<typename It, typename Comp>
-using function = void(It first, It last, Comp comp);
-
-/**
- * @brief Convert name to algorithm.
- */
-template<typename It, typename Comp>
-constexpr auto algorithm_from_string(const std::string_view name) noexcept -> function<It, Comp>*
-{
-    if (name == "BubbleSort") {
-        return sort::bubble<It, Comp>;
-    }
-
-    if (name == "InsertionSort") {
-        return sort::insertion<It, Comp>;
-    }
-
-    if (name == "HeapSort") {
-        return sort::heap<It, Comp>;
-    }
-
-    if (name == "QuickSort") {
-        return sort::quick<It, Comp>;
-    }
-
-    if (name == "MergeSort") {
-        return sort::quick<It, Comp>;
-    }
-
-    if (name == "SelectionSort") {
-        return sort::selection<It, Comp>;
-    }
-
-    return nullptr;
-}
 
 } // namespace
 
@@ -98,6 +53,7 @@ struct Sort::Impl
     /// Possible order type
     order_type order;
     /// Algorithm type
+    /// TODO
     std::string algorithm;
 };
 
@@ -137,67 +93,17 @@ void Sort::selectSortType(const QString type)
 
 void Sort::addValue(const QString value)
 {
-    _pimpl->data.push_back(value.toInt());
+    /// TODO
 }
 
 QVariantList Sort::execute()
 {
-    QVariantList result;
-
-    std::visit([&](auto& container) {
-            std::move(
-                _pimpl->data.begin(),
-                _pimpl->data.end(),
-                std::back_inserter(container)
-            );
-
-            utils::Range range{container};
-
-            range.set_change_handler([&] (auto change) mutable {
-                const auto index = [&] (const auto it) {
-                    return static_cast<std::size_t>(std::distance(container.begin(), it));
-                };
-
-                QVariant variant;
-    
-                variant.setValue(Change{index(change.first), index(change.second)});
-                result.push_back(std::move(variant));
-            });
-
-            const auto comparator = [&order = _pimpl->order] (const auto& lhs, const auto& rhs) {
-                return std::visit([&] (const auto & order) {
-                        return order(lhs, rhs);
-                    },
-                    order.data
-                );
-            };
-
-            /// Choose sort type
-            const auto sort = algorithm_from_string<typename decltype(range)::iterator, decltype(comparator)>(_pimpl->algorithm);
-            if (!sort) {
-                return;
-            }
-
-            /// Invoke sort & aggregate changes
-            sort(range.begin(), range.end(), comparator);
-            /// Move sorted container back to data
-            std::move(
-                container.begin(),
-                container.end(),
-                _pimpl->data.begin()
-            );
-            /// Clear container
-            container.clear();
-        },
-        _pimpl->container.data
-    );
-
-    return result;
+    /// TODO
 }
 
 void Sort::clear()
 {
-    _pimpl->data.clear();
+    /// TODO
 }
 
 } // namespace lab::ui
