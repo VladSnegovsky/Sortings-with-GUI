@@ -131,29 +131,30 @@ It iterPartition(It first, It last, Comp p)
  */
 template<typename FIter, typename Comp>
 constexpr void quickSort(FIter first, FIter last, std::vector<lab::sort::change::Change<FIter>> &changes, Comp comparator, std::forward_iterator_tag) {
-    if (std::distance(first, last) >= 2) {
-        auto pivot = first;
-        changes.emplace_back(lab::sort::change::SelectPivot<FIter>{pivot});
-        auto mid1 = iterPartition(first, last, [&comparator, pivot, &changes](const auto &val) {
-            changes.emplace_back(lab::sort::change::Compare<FIter>{val, pivot});
-            if (comparator(*val, *pivot)) {
-                changes.emplace_back(lab::sort::change::Swap<FIter>{val, pivot});
-                return true;
-            }
-            return false;
-        });
-        auto mid2 = iterPartition(mid1, last, [&comparator, pivot, &changes](const auto &val) {
-            changes.emplace_back(lab::sort::change::Compare<FIter>{val, pivot});
-            if (!comparator(*pivot, *val)) {
-                changes.emplace_back(lab::sort::change::Swap<FIter>{val, pivot});
-                return true;
-            }
-            return false;
-        });
+    const size_t distance = std::distance(first, last);
 
-        quickSort(first, mid1, changes, comparator, std::random_access_iterator_tag());
-        quickSort(mid2, last, changes, comparator, std::random_access_iterator_tag());
+    if (distance < 2) {
+        return;
     }
+
+    auto end = std::next(first, distance - 1);
+    
+    changes.emplace_back(lab::sort::change::Swap<FIter>{std::next(first, distance / 2), end});
+    std::iter_swap(std::next(first, distance / 2), end);
+
+    auto mid = iterPartition(first, end, [&](const auto &el) {
+        changes.emplace_back(lab::sort::change::Compare<FIter>{el, end});
+        if (comparator(*el, *end)) {
+            changes.emplace_back(lab::sort::change::Swap<FIter>{el, end});
+            return true;
+        }
+        return false;
+    });
+    std::iter_swap(mid, end);
+    changes.emplace_back(lab::sort::change::SelectPivot<FIter>{mid});
+
+    quickSort(first, mid, changes, comparator, std::forward_iterator_tag());
+    quickSort(std::next(mid), last, changes, comparator, std::forward_iterator_tag());
 }
 
 /**
@@ -161,29 +162,30 @@ constexpr void quickSort(FIter first, FIter last, std::vector<lab::sort::change:
  */
 template<typename RAIter, typename Comp>
 constexpr void quickSort(RAIter first, RAIter last, std::vector<lab::sort::change::Change<RAIter>> &changes, Comp comparator, std::random_access_iterator_tag) {
-    if (std::distance(first, last) >= 2) {
-        auto pivot = std::next(first, std::distance(first, last) / 2);
-        changes.emplace_back(lab::sort::change::SelectPivot<RAIter>{pivot});
-        auto mid1 = iterPartition(first, last, [&comparator, pivot, &changes](const auto &val) {
-            changes.emplace_back(lab::sort::change::Compare<RAIter>{val, pivot});
-            if (comparator(*val, *pivot)) {
-                changes.emplace_back(lab::sort::change::Swap<RAIter>{val, pivot});
-                return true;
-            }
-            return false;
-        });
-        auto mid2 = iterPartition(mid1, last, [&comparator, pivot, &changes](const auto &val) {
-            changes.emplace_back(lab::sort::change::Compare<RAIter>{val, pivot});
-            if (!comparator(*pivot, *val)) {
-                changes.emplace_back(lab::sort::change::Swap<RAIter>{val, pivot});
-                return true;
-            }
-            return false;
-        });
+    const size_t distance = std::distance(first, last);
 
-        quickSort(first, mid1, changes, comparator, std::random_access_iterator_tag());
-        quickSort(mid2, last, changes, comparator, std::random_access_iterator_tag());
+    if (distance < 2) {
+        return;
     }
+
+    auto end = std::next(first, distance - 1);
+    
+    changes.emplace_back(lab::sort::change::Swap<RAIter>{std::next(first, distance / 2), end});
+    std::iter_swap(std::next(first, distance / 2), end);
+
+    auto mid = iterPartition(first, end, [&](const auto &el) {
+        changes.emplace_back(lab::sort::change::Compare<RAIter>{el, end});
+        if (comparator(*el, *end)) {
+            changes.emplace_back(lab::sort::change::Swap<RAIter>{el, end});
+            return true;
+        }
+        return false;
+    });
+    std::iter_swap(mid, end);
+    changes.emplace_back(lab::sort::change::SelectPivot<RAIter>{mid});
+
+    quickSort(first, mid, changes, comparator, std::random_access_iterator_tag());
+    quickSort(std::next(mid), last, changes, comparator, std::random_access_iterator_tag());
 }
 
 /**
@@ -365,10 +367,13 @@ struct Sort<type::Merge>
             if (const auto distance = std::distance(first, last); distance > 1) {
                 const auto middle = std::next(first, distance / 2);
                 changes.emplace_back(lab::sort::change::SelectSubrange<It>{first, middle});
-                Sort<lab::sort::type::Merge>{}(first, middle, comp);
-                
+                auto left_changes = Sort<lab::sort::type::Merge>{}(first, middle, comp);
+                changes.insert(changes.end(), 
+                               std::make_move_iterator(left_changes.begin()), std::make_move_iterator(left_changes.end()));
                 changes.emplace_back(lab::sort::change::SelectSubrange<It>{middle, last});
-                Sort<lab::sort::type::Merge>{}(middle, last, comp);
+                auto right_changes = Sort<lab::sort::type::Merge>{}(middle, last, comp);
+                changes.insert(changes.end(), 
+                               std::make_move_iterator(right_changes.begin()), std::make_move_iterator(right_changes.end()));
                 
                 changes.emplace_back(lab::sort::change::MergeSubranges<It>{first, last});
                 detail::advanced_merge(first, middle, last, comp);
