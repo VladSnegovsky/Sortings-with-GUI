@@ -40,6 +40,9 @@ Window {
 
             var change = impl.changes[impl.index];
 
+            console.log(change instanceof "lab::ui");
+            return;
+
             switch (impl.state) {
                 case 0:
                     array.switchColor(change.first);
@@ -85,12 +88,12 @@ Window {
 
             model: ListModel {
                 id: items
-                ListElement { text: "SelectionSort" }
-                ListElement { text: "BubbleSort" }
-                ListElement { text: "QuickSort" }
-                ListElement { text: "InsertionSort" }
-                ListElement { text: "MergeSort" }
-                ListElement { text: "HeapSort" }
+                ListElement { text: "Selection" }
+                ListElement { text: "Insertion" }
+                ListElement { text: "Bubble" }
+                ListElement { text: "Quick" }
+                ListElement { text: "Merge" }
+                ListElement { text: "Heap" }
             }
 
             onCurrentIndexChanged: {

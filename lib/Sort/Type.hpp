@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+#include <optional>
 #include <variant>
 
 namespace lab::sort::type {
@@ -19,5 +21,34 @@ using Type = std::variant<
     Merge,
     Heap
 >;
+
+constexpr auto from_string(const std::string_view str) noexcept -> std::optional<Type>
+{
+    if (str == "Insertion") {
+        return Insertion{};
+    }
+
+    if (str == "Selection") {
+        return Selection{};
+    }
+
+    if (str == "Bubble") {
+        return Bubble{};
+    }
+
+    if (str == "Quick") {
+        return Quick{};
+    }
+
+    if (str == "Merge") {
+        return Merge{};
+    }
+
+    if (str == "Heap") {
+        return Heap{};
+    }
+
+    return {};
+}
 
 } // namespace lab::sort::type

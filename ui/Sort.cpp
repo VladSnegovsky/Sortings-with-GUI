@@ -4,57 +4,184 @@
 #include <Sort/Sort.hpp>
 #include <Sort/Type.hpp>
 #include <type_traits>
+#include <algorithm>
 #include <variant>
 #include <vector>
+#include <tuple>
 
 namespace lab::ui {
 namespace {
 
-/**
- * @brief Helper to simplify boilerplate typing.
- */
-template<typename T, template<typename...> typename... Cs>
-struct variant_storage
+struct Pair
 {
-    template<template<typename...> typename C, typename... Args>
-    void store() noexcept
+    template<typename K, typename V>
+    struct Plain
     {
-        data.template emplace<C<T, Args...>>();
-    }
+        using Key = K;
+        using Value = V;
+    };
 
-    std::variant<Cs<T>...> data;
+    template<typename K, template<typename...> typename V>
+    struct Generic
+    {
+        using Key = K;
+
+        template<typename... Ts>
+        using Value = V<Ts...>;
+    };
+};
+
+namespace detail {
+
+template<typename K, typename V>
+constexpr auto is_plain_impl(Pair::Plain<K, V>) -> std::true_type;
+
+template<typename T>
+constexpr auto is_plain_impl(T) -> std::false_type;
+
+template<typename T>
+constexpr bool is_plain = decltype(is_plain_impl(std::declval<T>()))::value;
+
+template<typename K, template<typename...> typename V>
+constexpr auto is_generic_impl(Pair::Generic<K, V>) -> std::true_type;
+
+template<typename T>
+constexpr auto is_generic_impl(T) -> std::false_type;
+
+template<typename T>
+constexpr bool is_generic = decltype(is_generic_impl(std::declval<T>()))::value;
+
+template<typename T>
+constexpr bool is_pair = is_plain<T> || is_generic<T>;
+
+template<typename Pair, typename... Args, typename = std::enable_if_t<detail::is_plain<Pair> && (sizeof...(Args) == 0)>>
+constexpr auto value_impl() -> typename Pair::Value;
+
+template<typename Pair, typename... Args, typename = std::enable_if_t<detail::is_generic<Pair> && (sizeof...(Args) > 0)>>
+constexpr auto value_impl() -> typename Pair::template Value<Args...>;
+
+template<typename Pair, typename... Args>
+using value = decltype(value_impl<Pair, Args...>());
+
+template<typename T, typename... Ts>
+constexpr auto index_of_impl() noexcept -> std::size_t
+{
+    constexpr auto index = [idx = 0] () mutable {
+        return ((std::is_same_v<T, Ts> ? false : ++idx) && ...) ? std::size_t(-1) : idx;
+    }();
+
+    static_assert(index != std::size_t(-1), "Type not found");
+    return index;
+}
+
+template<typename T, typename... Ts>
+constexpr auto index_of = index_of_impl<T, Ts...>();
+
+} // namespace detail
+
+
+template<typename... Pairs>
+class Map
+{
+private:
+    template<std::size_t I>
+    using Pair = std::tuple_element_t<I, std::tuple<Pairs...>>;
+
+public:
+    /// TODO: static assert for keys uniqness
+    static_assert((detail::is_pair<Pairs> && ...));
+
+    template<typename Key, typename... Args>
+    using Get = detail::value<
+        Pair<
+            detail::index_of<Key, typename Pairs::Key...>
+        >,
+        Args...
+    >;
 };
 
 } // namespace
 
 struct Sort::Impl
 {
-    /// Type used for demonstration
-    using value_type = int;
+    struct Value {
+        struct Int {};
 
-    /// Possible container type
-    using container_type = variant_storage<
-        value_type,
-        std::vector,
-        std::list
-    >;
+        using Variant = std::variant<
+            Int
+        >;
 
-    /// Possible order type
-    using order_type = variant_storage<
-        value_type,
-        std::less,
-        std::greater
-    >;
+        using Map = Map<
+            Pair::Plain<Int, int>
+        >;
+    };
+
+    struct Container {
+        struct Vector {};
+        struct List {};
+
+        using Variant = std::variant<
+            Vector,
+            List
+        >;
+
+        using Map = Map<
+            Pair::Generic<Vector, std::vector>,
+            Pair::Generic<List, std::list>
+        >;
+
+        static constexpr auto from_string(const std::string_view str) noexcept -> std::optional<Variant>
+        {
+            if (str == "Vector") {
+                return Vector{};
+            }
+
+            if (str == "List") {
+                return List{};
+            }
+
+            return {};
+        }
+    };
+
+    struct Order {
+        struct Asc {};
+        struct Desc {};
+
+        using Variant = std::variant<
+            Asc,
+            Desc
+        >;
+
+        using Map = Map<
+            Pair::Plain<Asc, std::less<>>,
+            Pair::Plain<Desc, std::greater<>>
+        >;
+
+        static constexpr auto from_string(const std::string_view str) noexcept -> std::optional<Variant>
+        {
+            if (str == "Asc") {
+                return Asc{};
+            }
+
+            if (str == "Desc") {
+                return Desc{};
+            }
+
+            return {};
+        }
+    };
 
     /// Data to be sorted
-    std::vector<value_type> data;
+    Value::Variant value;
+    /// TODO: replace this dirty shit with QVariant & deserialization based on Value::Variant
+    std::vector<int> data;
     /// Container to be sorted
-    container_type container;
+    Container::Variant container;
     /// Possible order type
-    order_type order;
+    Order::Variant order;
     /// Algorithm type
-    /// TODO
-    std::string algorithm;
+    sort::type::Type algorithm;
 };
 
 Sort::Sort()
@@ -66,44 +193,153 @@ Sort::~Sort() noexcept = default;
 
 void Sort::selectContainerType(const QString type)
 {
-    if (type == "Vector") {
-        return _pimpl->container.store<std::vector>();
+    const auto container = Impl::Container::from_string(type.toStdString());
+    if (!container) {
+        /// TODO: notify about inconsistency
+        return;
     }
 
-    if (type == "List") {
-        return _pimpl->container.store<std::list>();
-    }
+    _pimpl->container = std::move(*container);
 }
 
 void Sort::selectOrderType(const QString type)
 {
-    if (type == "Asc") {
-        return _pimpl->order.store<std::less>();
+    const auto order = Impl::Order::from_string(type.toStdString());
+    if (!order) {
+        /// TODO: notify about inconsistency
+        return;
     }
 
-    if (type == "Desc") {
-        return _pimpl->order.store<std::greater>();
-    }
+    _pimpl->order = std::move(*order);
 }
 
 void Sort::selectSortType(const QString type)
 {
-    _pimpl->algorithm = type.toStdString();
+    const auto algorithm = sort::type::from_string(type.toStdString());
+    if (!algorithm) {
+        /// TODO: notify about inconsistency
+        return;
+    }
+
+    _pimpl->algorithm = std::move(*algorithm);
 }
 
 void Sort::addValue(const QString value)
 {
-    /// TODO
+    _pimpl->data.push_back(value.toInt());
 }
 
 QVariantList Sort::execute()
 {
-    /// TODO
+    QVariantList result;
+
+    std::visit(
+        [&] (auto value) mutable {
+            using Value = Impl::Value::Map::template Get<decltype(value)>;
+
+            std::visit(
+                [&] (auto value) mutable {
+                    using Container = Impl::Container::Map::template Get<decltype(value), Value>;
+
+                    Container container;
+
+                    std::transform(
+                        _pimpl->data.begin(),
+                        _pimpl->data.end(),
+                        std::back_inserter(container),
+                        [] (const auto& value) {
+                            /// TODO: improve with proper serialization
+                            return value;
+                        }
+                    );
+
+                    const auto order = [&] (const auto& lhs, const auto& rhs) {
+                        return std::visit(
+                            [&] (auto value) {
+                                using Order = Impl::Order::Map::template Get<decltype(value)>;
+
+                                return Order{}(lhs, rhs);
+                            },
+                            _pimpl->order 
+                        );
+                    };
+
+                    const auto changes = std::visit(
+                        [&] (auto value) {
+                            return sort::Sort<decltype(value)>{}(
+                                container.begin(),
+                                container.end(),
+                                order
+                            );
+                        },
+                        _pimpl->algorithm
+                    );
+
+                    std::transform(
+                        changes.begin(),
+                        changes.end(),
+                        std::back_inserter(result),
+                        [&] (const auto& value) {
+                            using It = typename Container::iterator;
+
+                            const auto index = [&] (const auto iterator) {
+                                return static_cast<std::size_t>(std::distance(container.begin(), iterator));
+                            };
+
+                            return std::visit(
+                                [&] (const auto& change) {
+                                    using Change = std::remove_cv_t<std::remove_reference_t<decltype(value)>>;
+
+                                    QVariant variant;
+
+                                    if constexpr (std::is_same_v<Change, sort::change::Swap<It>>) {
+                                        variant.setValue(
+                                            change::Swap{
+                                                index(change.first),
+                                                index(change.second)
+                                            }
+                                        );
+                                    } else if constexpr (std::is_same_v<Change, sort::change::SelectPivot<It>>) {
+                                        variant.setValue(
+                                            change::SelectPivot{
+                                                index(change.value)
+                                            }
+                                        );
+                                    } else if constexpr (std::is_same_v<Change, sort::change::SelectSubrange<It>>) {
+                                        variant.setValue(
+                                            change::SelectSubrange{
+                                                index(change.first),
+                                                index(change.last)
+                                            }
+                                        );
+                                    } else if constexpr (std::is_same_v<Change, sort::change::MergeSubranges<It>>) {
+                                        variant.setValue(
+                                            change::MergeSubranges{
+                                                index(change.first),
+                                                index(change.last)
+                                            }
+                                        );
+                                    }
+
+                                    return variant;
+                                },
+                                value
+                            );
+                        }
+                    );
+                },
+                _pimpl->container
+            );        
+        },
+        _pimpl->value
+    );
+
+    return result;
 }
 
 void Sort::clear()
 {
-    /// TODO
+    _pimpl->data.clear();
 }
 
 } // namespace lab::ui

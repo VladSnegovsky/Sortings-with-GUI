@@ -26,7 +26,7 @@ struct Sort<type::Insertion>
 
         for (; first != last; ++first) {
             for (auto it = std::next(first); it != last; ++it) {
-                if (!comp(first, it)) {
+                if (!comp(*first, *it)) {
                     std::iter_swap(first, it);
                     changes.emplace_back(change::Swap{first, it});
                 }
