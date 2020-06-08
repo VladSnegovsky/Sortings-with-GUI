@@ -85,12 +85,12 @@ Window {
 
             model: ListModel {
                 id: items
-                ListElement { text: "SelectionSort" }
-                ListElement { text: "BubbleSort" }
-                ListElement { text: "QuickSort" }
-                ListElement { text: "InsertionSort" }
-                ListElement { text: "MergeSort" }
-                ListElement { text: "HeapSort" }
+                ListElement { text: "Selection" }
+                ListElement { text: "Insertion" }
+                ListElement { text: "Bubble" }
+                ListElement { text: "Quick" }
+                ListElement { text: "Merge" }
+                ListElement { text: "Heap" }
             }
 
             onCurrentIndexChanged: {

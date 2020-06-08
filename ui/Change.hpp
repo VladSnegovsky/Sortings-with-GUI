@@ -12,6 +12,7 @@ class Swap
     Q_GADGET
     Q_PROPERTY(unsigned int first READ first)
     Q_PROPERTY(unsigned int second READ second)
+    Q_PROPERTY(QString type READ type)
 public:
     Swap(const std::size_t first, const std::size_t second) noexcept :
         _first{first},
@@ -32,6 +33,12 @@ public:
         return _second;
     }
 
+
+    QString type() const
+    {
+        return "Swap";
+    }
+
 private:
     std::size_t _first{0};
     std::size_t _second{0};
@@ -41,6 +48,7 @@ class SelectPivot
 {
     Q_GADGET
     Q_PROPERTY(unsigned int value READ value)
+    Q_PROPERTY(QString type READ type)
 public:
     explicit SelectPivot(const std::size_t value) noexcept :
         _value{value}
@@ -55,6 +63,11 @@ public:
         return _value;
     }
 
+    QString type() const
+    {
+        return "SelectPivot";
+    }
+
 private:
     std::size_t _value{0};
 };
@@ -64,6 +77,7 @@ class SelectSubrange
     Q_GADGET
     Q_PROPERTY(unsigned int first READ first)
     Q_PROPERTY(unsigned int last READ last)
+    Q_PROPERTY(QString type READ type)
 public:
     SelectSubrange(const std::size_t first, const std::size_t last) noexcept :
         _first{first},
@@ -84,6 +98,12 @@ public:
         return _last;
     }
 
+
+    QString type() const
+    {
+        return "SelectSubrange";
+    }
+
 private:
     std::size_t _first{0};
     std::size_t _last{0};
@@ -94,6 +114,7 @@ class MergeSubranges
     Q_GADGET
     Q_PROPERTY(unsigned int first READ first)
     Q_PROPERTY(unsigned int last READ last)
+    Q_PROPERTY(QString type READ type)
 public:
     MergeSubranges(const std::size_t first, const std::size_t last) noexcept :
         _first{first},
@@ -114,9 +135,52 @@ public:
         return _last;
     }
 
+
+    QString type() const
+    {
+        return "MergeSubranges";
+    }
+
 private:
     std::size_t _first{0};
     std::size_t _last{0};
+};
+
+class Compare
+{
+    Q_GADGET
+    Q_PROPERTY(unsigned int first READ first)
+    Q_PROPERTY(unsigned int second READ second)
+    Q_PROPERTY(QString type READ type)
+public:
+    Compare(const std::size_t first, const std::size_t second) noexcept :
+        _first{first},
+        _second{second}
+    { }
+
+    Compare() = default;
+    Compare(const Compare&) = default;
+    Compare& operator=(const Compare&) = default;
+
+    std::size_t first() const noexcept
+    {
+        return _first;
+    }
+
+    std::size_t second() const noexcept
+    {
+        return _second;
+    }
+
+
+    QString type() const
+    {
+        return "Compare";
+    }
+
+private:
+    std::size_t _first{0};
+    std::size_t _second{0};
 };
 
 } // namespace lab::ui::change
@@ -125,3 +189,4 @@ Q_DECLARE_METATYPE(lab::ui::change::Swap);
 Q_DECLARE_METATYPE(lab::ui::change::SelectPivot);
 Q_DECLARE_METATYPE(lab::ui::change::SelectSubrange);
 Q_DECLARE_METATYPE(lab::ui::change::MergeSubranges);
+Q_DECLARE_METATYPE(lab::ui::change::Compare);
