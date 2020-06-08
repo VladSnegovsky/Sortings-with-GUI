@@ -232,34 +232,55 @@ void selectionSort(It first, It last, std::vector<lab::sort::change::Change<It>>
  * @brief Merges two ranges into first
  */
 template<typename It, typename Comp>
-void advanced_merge(It first, It middle, It last, Comp comp) {
+void advanced_merge(It first, It middle, It last, std::vector<lab::sort::change::Change<It>> &changes, Comp comp) {
     std::list<typename std::iterator_traits<It>::value_type> buffer(std::distance(first, last));
+    std::vector<int> indexes;
     auto buffer_it = buffer.begin();
     auto first_range_it = first;
     auto second_range_it = middle;
     while ((first_range_it != middle) && (second_range_it != last)) {
         if (comp(*first_range_it, *second_range_it)) {
+            indexes.push_back(std::distance(first, first_range_it));
             std::iter_swap(buffer_it, first_range_it);
             ++first_range_it;
         } else {
+            indexes.push_back(std::distance(first, second_range_it));
             std::iter_swap(buffer_it, second_range_it);
             ++second_range_it;
         }
         ++buffer_it;
     }
     while (first_range_it != middle) {
+        indexes.push_back(std::distance(first, first_range_it));
         std::iter_swap(buffer_it, first_range_it);
         ++first_range_it;
         ++buffer_it;
     }
     while (second_range_it != last) {
+        indexes.push_back(std::distance(first, second_range_it));
         std::iter_swap(buffer_it, second_range_it);
         ++second_range_it;
         ++buffer_it;
     }
+    
+    auto t_first = first;
     for (auto it = buffer.begin(); it != buffer.end(); ++it) {
-        std::iter_swap(it, first);
-        ++first;
+        std::iter_swap(it, t_first);
+        ++t_first;
+    }
+    
+    for (int fixed_index = 0; fixed_index < indexes.size(); ++fixed_index) {
+        if (indexes[fixed_index] != fixed_index) {
+            int pos = fixed_index;
+            for (int i = fixed_index; i < indexes.size(); ++i) {
+                if (indexes[i] == fixed_index) {
+                    pos = i;
+                    break;
+                }
+            }
+            std::swap(indexes[pos], indexes[fixed_index]);
+            changes.emplace_back(lab::sort::change::Swap{std::next(first, indexes[pos]), std::next(first, indexes[fixed_index])});
+        }
     }
 }
 
@@ -366,17 +387,17 @@ struct Sort<type::Merge>
 
             if (const auto distance = std::distance(first, last); distance > 1) {
                 const auto middle = std::next(first, distance / 2);
-                changes.emplace_back(lab::sort::change::SelectSubrange<It>{first, middle});
+//                 changes.emplace_back(lab::sort::change::SelectSubrange<It>{first, middle});
                 auto left_changes = Sort<lab::sort::type::Merge>{}(first, middle, comp);
                 changes.insert(changes.end(), 
                                std::make_move_iterator(left_changes.begin()), std::make_move_iterator(left_changes.end()));
-                changes.emplace_back(lab::sort::change::SelectSubrange<It>{middle, last});
+//                 changes.emplace_back(lab::sort::change::SelectSubrange<It>{middle, last});
                 auto right_changes = Sort<lab::sort::type::Merge>{}(middle, last, comp);
                 changes.insert(changes.end(), 
                                std::make_move_iterator(right_changes.begin()), std::make_move_iterator(right_changes.end()));
                 
-                changes.emplace_back(lab::sort::change::MergeSubranges<It>{first, last});
-                detail::advanced_merge(first, middle, last, comp);
+//                 changes.emplace_back(lab::sort::change::MergeSubranges<It>{first, last});
+                detail::advanced_merge(first, middle, last, changes, comp);
             }
 
             return changes;
