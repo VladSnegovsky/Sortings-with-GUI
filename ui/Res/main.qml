@@ -66,10 +66,8 @@ Window {
 
                         if (impl.index == impl.changes.length - 1) {
                             impl.index = 0;
-                            if (prevF != -1){
-                                array.switchColor(prevL);
-                                array.switchColor(prevF);
-                            }
+                            array.switchColor(prevL);
+                            array.switchColor(prevF);
                             prevL = -1;
                             prevF = -1;
                             return stop();
@@ -97,6 +95,8 @@ Window {
                 impl.index++;
                 if (impl.index == impl.changes.length - 1) {
                     impl.index = 0;
+                    array.switchColor(prevL);
+                    array.switchColor(prevF);
                     prevL = -1;
                     prevF = -1;
                     return stop();
@@ -104,6 +104,14 @@ Window {
             }
             else {
                 impl.index++;
+                if (impl.index == impl.changes.length - 1) {
+                    impl.index = 0;
+                    array.switchColor(prevL);
+                    array.switchColor(prevF);
+                    prevL = -1;
+                    prevF = -1;
+                    return stop();
+                }
             }
 
 //            else if (change.type == "SelectSubrange"){
